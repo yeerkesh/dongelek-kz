@@ -1,0 +1,63 @@
+<div class="detail-page">
+  <a routerLink="/home" class="back-link">← Назад к списку</a>
+
+  @if (isLoading) {
+    <div class="loading">Загрузка...</div>
+  }
+  @if (errorMessage && !car) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  }
+
+  @if (car && !isLoading) {
+    <div class="detail-card">
+      <div class="detail-image">
+        @if (car.image_url) {
+          <img [src]="car.image_url" [alt]="car.title" />
+        } @else {
+          <div class="no-image">🚗</div>
+        }
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-header">
+          <h1>{{ car.title }}</h1>
+          <span class="status-badge" [class.inactive]="!car.is_active">
+            {{ car.is_active ? 'Активно' : 'Неактивно' }}
+          </span>
+        </div>
+
+        <p class="detail-price">{{ car.price | number }} ₸</p>
+
+        <div class="detail-specs">
+          <div class="spec"><span>Год</span><strong>{{ car.year }}</strong></div>
+          <div class="spec"><span>Пробег</span><strong>{{ car.mileage | number }} км</strong></div>
+        </div>
+
+        <p class="detail-description">{{ car.description }}</p>
+
+        @if (auth.isLoggedIn()) {
+          <div class="owner-actions">
+            <a [routerLink]="['/post-car', car.id]" class="btn-edit">✏️ Редактировать</a>
+            <button (click)="deleteCar()" class="btn-delete">🗑️ Удалить</button>
+          </div>
+        }
+
+        @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
+        @if (successMessage) { <div class="success-banner">✅ {{ successMessage }}</div> }
+
+        @if (auth.isLoggedIn()) {
+          <div class="message-section">
+            <h3>Написать продавцу</h3>
+            <textarea [(ngModel)]="messageText" placeholder="Ваше сообщение..."
+                      rows="3" class="message-input"></textarea>
+            <button (click)="sendMessage()" [disabled]="!messageText.trim() || sendingMessage" class="btn-send">
+              {{ sendingMessage ? 'Отправка...' : 'Отправить' }}
+            </button>
+          </div>
+        } @else {
+          <p class="login-prompt"><a routerLink="/login">Войдите</a>, чтобы написать продавцу.</p>
+        }
+      </div>
+    </div>
+  }
+</div>
