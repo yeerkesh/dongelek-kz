@@ -3,11 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, DecimalPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

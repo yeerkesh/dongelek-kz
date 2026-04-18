@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { CarService } from '../../services/car.service';
 import { AuthService } from '../../services/auth.service';
 import { Car } from '../../interfaces/car.interface';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-car-detail',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, DecimalPipe],
   templateUrl: './car-detail.component.html',
   styleUrl: './car-detail.component.css'
 })
