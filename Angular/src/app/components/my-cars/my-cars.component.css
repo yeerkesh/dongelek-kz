@@ -1,0 +1,27 @@
+.my-cars-page { font-family: 'Segoe UI', sans-serif; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-header h2 { margin: 0; font-size: 1.5rem; color: #1a1a2e; }
+.btn-add { padding: 9px 20px; background: #e94560; color: #fff; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+.btn-add:hover { background: #c73652; }
+.loading { text-align: center; padding: 60px; color: #888; }
+.empty-state { text-align: center; padding: 60px; color: #aaa; }
+.empty-state p { font-size: 1.1rem; margin-bottom: 16px; }
+.cars-list { display: flex; flex-direction: column; gap: 14px; }
+.car-row { display: flex; align-items: center; gap: 16px; background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.car-thumb { width: 90px; height: 70px; border-radius: 8px; overflow: hidden; background: #f0f0f0; flex-shrink: 0; }
+.car-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.no-img-icon { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+.car-info { flex: 1; }
+.car-title { font-weight: 600; color: #1a1a2e; text-decoration: none; font-size: 0.95rem; }
+.car-title:hover { color: #e94560; }
+.car-meta { margin: 4px 0; color: #888; font-size: 0.82rem; }
+.status-chip { display: inline-block; font-size: 0.75rem; background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 12px; }
+.status-chip.inactive { background: #f8d7da; color: #721c24; }
+.car-price { font-weight: 700; color: #e94560; font-size: 1rem; white-space: nowrap; }
+.car-actions { display: flex; gap: 8px; }
+.btn-edit { padding: 6px 14px; background: #1a1a2e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 0.82rem; }
+.btn-edit:hover { background: #e94560; }
+.btn-delete { padding: 6px 14px; background: #fff; border: 1px solid #e94560; color: #e94560; border-radius: 6px; cursor: pointer; font-size: 0.82rem; }
+.btn-delete:hover { background: #e94560; color: #fff; }
+.error-banner { background: #fff0f0; border: 1px solid #fcc; color: #c00; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+.success-banner { background: #f0fff4; border: 1px solid #9f9; color: #060; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }

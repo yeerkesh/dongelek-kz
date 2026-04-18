@@ -1,0 +1,44 @@
+<div class="my-cars-page">
+  <div class="page-header">
+    <h2>🚗 Мои объявления</h2>
+    <a routerLink="/post-car" class="btn-add">+ Новое объявление</a>
+  </div>
+
+  @if (errorMessage) { <div class="error-banner">⚠️ {{ errorMessage }}</div> }
+  @if (successMessage) { <div class="success-banner">✅ {{ successMessage }}</div> }
+
+  @if (isLoading) {
+    <div class="loading">Загрузка...</div>
+  } @else if (cars.length === 0) {
+    <div class="empty-state">
+      <p>😕 У вас пока нет объявлений.</p>
+      <a routerLink="/post-car" class="btn-add">Подать первое объявление</a>
+    </div>
+  } @else {
+    <div class="cars-list">
+      @for (car of cars; track car.id) {
+        <div class="car-row">
+          <div class="car-thumb">
+            @if (car.image_url) {
+              <img [src]="car.image_url" [alt]="car.title" />
+            } @else {
+              <div class="no-img-icon">🚗</div>
+            }
+          </div>
+          <div class="car-info">
+            <a [routerLink]="['/cars', car.id]" class="car-title">{{ car.title }}</a>
+            <p class="car-meta">{{ car.year }} г. · {{ car.mileage | number }} км</p>
+            <span class="status-chip" [class.inactive]="!car.is_active">
+              {{ car.is_active ? '✅ Активно' : '⏸ Неактивно' }}
+            </span>
+          </div>
+          <div class="car-price">{{ car.price | number }} ₸</div>
+          <div class="car-actions">
+            <a [routerLink]="['/post-car', car.id]" class="btn-edit">Изменить</a>
+            <button (click)="deleteCar(car.id)" class="btn-delete">Удалить</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
