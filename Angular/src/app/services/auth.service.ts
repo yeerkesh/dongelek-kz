@@ -5,7 +5,7 @@ import { AuthResponse } from '../interfaces/user.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:8000/api';
+  private api = '/api';
 
   constructor(private http: HttpClient) {}
 

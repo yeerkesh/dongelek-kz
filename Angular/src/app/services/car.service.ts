@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CarService {
-  private api = 'http://localhost:8000/api';
+  private api = '/api';
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
