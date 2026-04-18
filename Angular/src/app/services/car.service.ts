@@ -45,4 +45,7 @@ export class CarService {
   sendMessage(data: any): Observable<any> {
     return this.http.post(`${this.api}/messages/`, data, { headers: this.authHeaders() });
   }
+  getMyMessages(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/my-messages/`, { headers: this.authHeaders() });
+  }
 }

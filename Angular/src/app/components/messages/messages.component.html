@@ -1,0 +1,17 @@
+<div class="messages-page">
+  <h2>Входящие сообщения</h2>
+  @if (isLoading) {
+    <div class="loading">Загрузка...</div>
+  } @else if (errorMessage) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  } @else if (messages.length === 0) {
+    <p class="empty">Сообщений пока нет.</p>
+  } @else {
+    @for (msg of messages; track msg.id) {
+      <div class="message-card">
+        <p class="message-text">{{ msg.text }}</p>
+        <p class="message-meta">От пользователя #{{ msg.sender }} · Объявление #{{ msg.car }}</p>
+      </div>
+    }
+  }
+</div>

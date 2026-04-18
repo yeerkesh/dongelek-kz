@@ -166,3 +166,11 @@ class MyCarsAPIView(APIView):
         cars = Car.objects.filter(owner=request.user)
         serializer = CarSerializer(cars, many=True)
         return Response(serializer.data)
+
+class MyMessagesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        messages = Message.objects.filter(receiver=request.user)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
