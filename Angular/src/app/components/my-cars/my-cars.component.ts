@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car } from '../../interfaces/car.interface';
+import { DecimalPipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-my-cars',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe],
   templateUrl: './my-cars.component.html',
   styleUrl: './my-cars.component.css'
 })
