@@ -5,7 +5,7 @@
   </div>
 
   <div class="filters">
-    <input type="text" placeholder="🔍 Поиск..." [(ngModel)]="searchQuery"
+    <input type="text" placeholder="Поиск..." [(ngModel)]="searchQuery"
            (ngModelChange)="applyFilters()" class="filter-input search-input" />
 
     <select [(ngModel)]="selectedBrand" (ngModelChange)="applyFilters()" class="filter-input">
@@ -21,7 +21,7 @@
            (ngModelChange)="applyFilters()" class="filter-input" />
 
     <button (click)="resetFilters()" class="btn-reset">Сбросить</button>
-    <button (click)="loadCars()" class="btn-refresh">🔄 Обновить</button>
+    <button (click)="loadCars()" class="btn-refresh">Обновить</button>
   </div>
 
   @if (errorMessage) {
@@ -35,7 +35,7 @@
 
     <div class="cars-grid">
       @if (filteredCars.length === 0) {
-        <div class="empty-state">😕 Объявления не найдены.</div>
+        <div class="empty-state">Объявления не найдены.</div>
       }
       @for (car of filteredCars; track car.id) {
         <a [routerLink]="['/cars', car.id]" class="car-card">
