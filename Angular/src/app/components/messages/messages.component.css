@@ -1,0 +1,7 @@
+.messages-page { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+.message-card { background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.message-text { font-size: 1rem; margin-bottom: 0.5rem; }
+.message-meta { font-size: 0.8rem; color: #888; }
+.empty { color: #888; text-align: center; margin-top: 2rem; }
+.loading { text-align: center; margin-top: 2rem; }
+.error-banner { background: #fee; color: #c00; padding: 1rem; border-radius: 8px; }

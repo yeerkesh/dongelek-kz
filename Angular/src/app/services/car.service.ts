@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CarService {
-  private api = 'http://localhost:8000/api';
+  private api = '/api';
 
   constructor(private http: HttpClient, private auth: AuthService) {}
 
@@ -44,5 +44,8 @@ export class CarService {
 
   sendMessage(data: any): Observable<any> {
     return this.http.post(`${this.api}/messages/`, data, { headers: this.authHeaders() });
+  }
+  getMyMessages(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.api}/my-messages/`, { headers: this.authHeaders() });
   }
 }

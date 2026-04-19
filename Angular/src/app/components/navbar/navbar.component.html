@@ -6,6 +6,7 @@
 
     @if (auth.isLoggedIn()) {
       <a routerLink="/my-cars" routerLinkActive="active">Мои авто</a>
+      <a routerLink="/messages" routerLinkActive="active">Сообщения</a>
       <a routerLink="/post-car" class="btn-post">+ Подать объявление</a>
       <span class="username">👤 {{ auth.getUsername() }}</span>
       <button (click)="logout()" class="btn-logout">Выйти</button>

@@ -1,4 +1,4 @@
-#!/home/homel/Web-Dev-Project/Web-Dev-Project/webdevdj/venv/bin/python3
+#!/home/ubuntu/Web-Dev-Project/webdevdj/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

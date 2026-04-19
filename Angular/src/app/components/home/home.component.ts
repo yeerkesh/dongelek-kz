@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
 import { DecimalPipe } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -25,7 +25,8 @@ export class HomeComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private carService: CarService) {}
+  constructor(private carService: CarService, private cdr: ChangeDetectorRef) {
+}
 
   ngOnInit(): void {
     this.carService.getBrands().subscribe({
@@ -43,11 +44,13 @@ export class HomeComponent implements OnInit {
         this.cars = cars;
         this.applyFilters();
         this.isLoading = false;
+	this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Ошибка загрузки. Проверьте подключение к серверу.';
         this.isLoading = false;
-      }
+	this.cdr.detectChanges();
+      }	
     });
   }
 
