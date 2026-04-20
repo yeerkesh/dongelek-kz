@@ -1,7 +1,15 @@
-node_modules/
-dist/
-.angular/
-*.env
+
+# Python
 __pycache__/
 *.pyc
 db.sqlite3
+.env
+venv/
+.venv/
+env/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+

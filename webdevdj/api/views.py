@@ -4,11 +4,9 @@ from rest_framework import status
 from .models import CarBrand, Car, Message
 from .serializers import CarBrandSerializer, CarSerializer, MessageSerializer
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.shortcuts import get_object_or_404
-from rest_framework import status
 
 
 
@@ -73,6 +71,9 @@ def car_detail(request, pk):
 
 @api_view(['GET', 'POST'])
 def message_list(request):
+    if not request.user.is_authenticated:
+        return Response({'error': 'Authentication required'}, status=401)
+
     if request.method == 'GET':
         messages = Message.objects.all()
         serializer = MessageSerializer(messages, many=True)
@@ -91,11 +92,23 @@ def register_view(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
-    if not username or not password:
-        return Response({'error': 'Username and password are required'}, status=400)
+    if not username or not email or not password:
+        return Response(
+            {'error': 'Username, email and password are required'},
+            status=400
+        )
 
     if User.objects.filter(username=username).exists():
-        return Response({'error': 'Username already exists'}, status=400)
+        return Response(
+            {'error': 'Username already exists'},
+            status=400
+        )
+
+    if User.objects.filter(email=email).exists():
+        return Response(
+            {'error': 'Email already exists'},
+            status=400
+        )
 
     user = User.objects.create_user(
         username=username,
@@ -105,7 +118,8 @@ def register_view(request):
 
     return Response({
         'message': 'User created successfully',
-        'username': user.username
+        'username': user.username,
+        'email': user.email
     }, status=201)
 
 class CarListCreateAPIView(APIView):
