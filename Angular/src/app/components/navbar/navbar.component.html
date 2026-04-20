@@ -1,0 +1,18 @@
+<nav class="navbar">
+  <a routerLink="/home" class="brand">Дөңгелек.қз</a>
+
+  <div class="nav-links">
+    <a routerLink="/home" routerLinkActive="active">Объявления</a>
+
+    @if (auth.isLoggedIn()) {
+      <a routerLink="/my-cars" routerLinkActive="active">Мои авто</a>
+      <a routerLink="/messages" routerLinkActive="active">Сообщения</a>
+      <a routerLink="/post-car" class="btn-post">+ Подать объявление</a>
+      <span class="username">👤 {{ auth.getUsername() }}</span>
+      <button (click)="logout()" class="btn-logout">Выйти</button>
+    } @else {
+      <a routerLink="/login" routerLinkActive="active">Войти</a>
+      <a routerLink="/register" class="btn-post">Регистрация</a>
+    }
+  </div>
+</nav>

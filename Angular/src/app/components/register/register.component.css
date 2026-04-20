@@ -1,0 +1,17 @@
+.auth-page { display: flex; justify-content: center; padding-top: 40px; font-family: 'Segoe UI', sans-serif; }
+.auth-card { width: 100%; max-width: 420px; background: #fff; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); text-align: center; }
+.auth-logo { font-size: 2.5rem; margin-bottom: 12px; }
+.auth-card h2 { margin: 0 0 8px; font-size: 1.5rem; color: #1a1a2e; }
+.auth-subtitle { margin: 0 0 28px; color: #888; font-size: 0.88rem; }
+.form-group { text-align: left; margin-bottom: 18px; }
+.form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 6px; }
+.form-control { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; background: #fafafa; transition: border-color 0.2s; }
+.form-control:focus { outline: none; border-color: #e94560; background: #fff; }
+.hint-error { margin: 4px 0 0; color: #e94560; font-size: 0.78rem; }
+.btn-submit { width: 100%; padding: 12px; background: #e94560; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 16px; }
+.btn-submit:hover:not(:disabled) { background: #c73652; }
+.btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+.auth-switch { color: #888; font-size: 0.88rem; margin: 0; }
+.auth-switch a { color: #e94560; text-decoration: none; font-weight: 600; }
+.error-banner { background: #fff0f0; border: 1px solid #fcc; color: #c00; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 0.88rem; }
+.success-banner { background: #f0fff4; border: 1px solid #9f9; color: #060; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 0.88rem; }
