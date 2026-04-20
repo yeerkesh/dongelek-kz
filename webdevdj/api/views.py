@@ -100,13 +100,13 @@ def register_view(request):
 
     if User.objects.filter(username=username).exists():
         return Response(
-            {'error': 'Username already exists'},
+            {'error': 'Такой логин уже существует'},
             status=400
         )
 
     if User.objects.filter(email=email).exists():
         return Response(
-            {'error': 'Email already exists'},
+           {'error': 'Такой email уже существует'},
             status=400
         )
 
