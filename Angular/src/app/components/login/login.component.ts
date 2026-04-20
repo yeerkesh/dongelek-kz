@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +18,11 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+  private auth: AuthService,
+  private router: Router,
+  private cdr: ChangeDetectorRef
+) {}
 
   login(): void {
     if (!this.username || !this.password) {
@@ -30,10 +36,16 @@ export class LoginComponent {
         this.auth.saveToken(res.access);
         this.router.navigate(['/home']);
       },
-      error: () => {
-        this.errorMessage = 'Неверный логин или пароль.';
+      error: (err: HttpErrorResponse) => {
+        console.log('LOGIN ERROR FULL:', err);
+        console.log('LOGIN ERROR BODY:', err.error);
+
+        this.errorMessage = 'Неверный логин или пароль';
         this.isLoading = false;
+
+        this.cdr.detectChanges();
       }
     });
   }
 }
+

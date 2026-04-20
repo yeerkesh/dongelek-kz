@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
+
+
 
 @Component({
   selector: 'app-register',
@@ -19,7 +23,11 @@ export class RegisterComponent {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+  private auth: AuthService,
+  private router: Router,
+  private cdr: ChangeDetectorRef
+) {}
 
   isValid(): boolean {
     return !!(this.username && this.email && this.password && this.password === this.confirmPassword);
@@ -38,10 +46,18 @@ export class RegisterComponent {
         this.successMessage = 'Аккаунт создан! Перенаправление...';
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
-      error: (err) => {
-        this.errorMessage = err?.error?.error || 'Ошибка регистрации.';
+      error: (err: HttpErrorResponse) => {
+        console.log('REGISTER ERROR FULL:', err);
+        console.log('REGISTER ERROR BODY:', err.error);
+
+        this.errorMessage =
+          err.error?.error ||
+          err.error?.detail ||
+          'Ошибка регистрации.';
+
         this.isLoading = false;
-      }
+        this.cdr.detectChanges();
+}
     });
   }
 }
