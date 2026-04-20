@@ -17,7 +17,7 @@ class Car(models.Model):
     year = models.IntegerField()
     mileage = models.IntegerField()
     description = models.TextField()
-    image_url = models.URLField(blank=True)
+    image_url = models.URLField(blank=True, max_length=500)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
