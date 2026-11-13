@@ -20,3 +20,5 @@
 .nav-links a.username:hover, .nav-links a.username.active { border-color: #e94560; }
 .btn-logout { background: none; border: 1px solid #555; color: #aaa; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
 .btn-logout:hover { border-color: #e94560; color: #e94560; }
+.msg-link { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+.badge { background: #e94560; color: #fff; font-size: 0.7rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; }

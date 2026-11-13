@@ -31,3 +31,4 @@
 .error-banner { background: #fff0f0; border: 1px solid #fcc; color: #c00; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; }
 .success-banner { background: #f0fff4; border: 1px solid #9f9; color: #060; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; }
 @media (max-width: 700px) { .detail-card { grid-template-columns: 1fr; } .detail-content { padding: 20px; } }
+.success-banner a { margin-left: 10px; font-weight: 600; color: inherit; text-decoration: underline; }

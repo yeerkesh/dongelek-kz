@@ -6,7 +6,12 @@
 
     @if (auth.isLoggedIn()) {
       <a routerLink="/my-cars" routerLinkActive="active">Мои авто</a>
-      <a routerLink="/messages" routerLinkActive="active">Сообщения</a>
+      <a routerLink="/messages" routerLinkActive="active" class="msg-link">
+        Сообщения
+        @if (unread.count() > 0) {
+          <span class="badge">{{ unread.count() > 99 ? '99+' : unread.count() }}</span>
+        }
+      </a>
       <a routerLink="/post-car" class="btn-post">+ Подать объявление</a>
       <a routerLink="/profile" routerLinkActive="active" class="username">👤 {{ auth.getUsername() }}</a>
       <button (click)="logout()" class="btn-logout">Выйти</button>

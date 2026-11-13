@@ -35,7 +35,11 @@
           </div>
         }
         @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
-        @if (successMessage) { <div class="success-banner">✅ {{ successMessage }}</div> }
+        @if (successMessage) {
+          <div class="success-banner">✅ {{ successMessage }}
+            @if (car) { <a [routerLink]="['/messages', car.id, car.owner]">Открыть переписку</a> }
+          </div>
+        }
         @if (auth.isLoggedIn() && +auth.getUserId() !== car.owner) {
           <div class="message-section">
             <h3>Написать продавцу</h3>

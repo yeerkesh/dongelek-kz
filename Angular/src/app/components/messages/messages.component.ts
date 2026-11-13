@@ -1,34 +1,40 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CarService } from '../../services/car.service';
-import { DecimalPipe } from '@angular/common';
-
-interface Message {
-  id: number;
-  text: string;
-  sender: number;
-  receiver: number;
-  car: number;
-  created_at?: string;
-}
+import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { Conversation, MessageService } from '../../services/message.service';
+import { UnreadService } from '../../services/unread.service';
 
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [],
+  imports: [RouterLink, DatePipe],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
 export class MessagesComponent implements OnInit {
-  messages: Message[] = [];
+  conversations: Conversation[] = [];
   isLoading = true;
   errorMessage = '';
 
-  constructor(private carService: CarService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private messageService: MessageService,
+    private unread: UnreadService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.carService.getMyMessages().subscribe({
-      next: msgs => { this.messages = msgs; this.isLoading = false; this.cdr.detectChanges(); },
-      error: () => { this.errorMessage = 'Не удалось загрузить сообщения.'; this.isLoading = false; this.cdr.detectChanges(); }
+    this.messageService.getConversations().subscribe({
+      next: list => {
+        this.conversations = list;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Не удалось загрузить сообщения.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
+    this.unread.refresh();
   }
 }

@@ -34,7 +34,7 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = '__all__'
-        read_only_fields = ['sender']
+        read_only_fields = ['sender', 'is_read']
 
     def validate(self, attrs):
         request = self.context.get('request')

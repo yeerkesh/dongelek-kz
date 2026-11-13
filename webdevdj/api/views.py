@@ -195,3 +195,85 @@ class ProfileAPIView(APIView):
             profile.city = data['city']
         profile.save()
         return Response(ProfileSerializer(self._data(user)).data)
+
+
+class ConversationListAPIView(APIView):
+    """List of conversations of the current user.
+    One conversation = one car + one other person."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        me = request.user
+        messages = (
+            Message.objects
+            .filter(Q(sender=me) | Q(receiver=me))
+            .select_related('sender', 'receiver', 'car')
+            .order_by('-created_at')
+        )
+
+        conversations = {}
+        for m in messages:
+            other = m.receiver if m.sender_id == me.id else m.sender
+            key = (m.car_id, other.id)
+            if key not in conversations:
+                # messages are sorted from new to old, so the first one is the last message
+                conversations[key] = {
+                    'car_id': m.car_id,
+                    'car_title': m.car.title,
+                    'car_image_url': m.car.image_url,
+                    'other_user_id': other.id,
+                    'other_username': other.username,
+                    'last_text': m.text,
+                    'last_at': m.created_at,
+                    'last_from_me': m.sender_id == me.id,
+                    'unread': 0,
+                }
+            if m.receiver_id == me.id and not m.is_read:
+                conversations[key]['unread'] += 1
+
+        return Response(list(conversations.values()))
+
+
+class ThreadAPIView(APIView):
+    """All messages between the current user and another user about one car.
+    Opening the thread marks incoming messages as read."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, car_id, user_id):
+        me = request.user
+        car = get_object_or_404(Car, pk=car_id)
+        other = get_object_or_404(User, pk=user_id)
+
+        thread = (
+            Message.objects
+            .filter(car=car)
+            .filter(
+                Q(sender=me, receiver=other) | Q(sender=other, receiver=me)
+            )
+            .select_related('sender', 'receiver', 'car')
+            .order_by('created_at')
+        )
+
+        Message.objects.filter(
+            car=car, sender=other, receiver=me, is_read=False
+        ).update(is_read=True)
+
+        return Response({
+            'car': {
+                'id': car.id,
+                'title': car.title,
+                'image_url': car.image_url,
+                'owner': car.owner_id,
+            },
+            'other_user': {'id': other.id, 'username': other.username},
+            'messages': MessageSerializer(thread, many=True).data,
+        })
+
+
+class UnreadCountAPIView(APIView):
+    """Number of unread messages (for the red badge in the navbar)."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        count = Message.objects.filter(receiver=request.user, is_read=False).count()
+        return Response({'count': count})
