@@ -1,0 +1,48 @@
+<div class="profile-page">
+  @if (isLoading) {
+    <p class="state">Загрузка...</p>
+  } @else if (profile) {
+    <div class="card header">
+      <div class="avatar">{{ profile.username.charAt(0).toUpperCase() }}</div>
+      <div class="info">
+        <h1>{{ profile.username }}
+          @if (profile.is_staff) { <span class="badge">Админ</span> }
+        </h1>
+        <p class="muted">На сайте с {{ profile.date_joined | date: 'dd.MM.yyyy' }}</p>
+      </div>
+      <a routerLink="/my-cars" class="stat">
+        <strong>{{ profile.cars_count }}</strong>
+        <span>моих объявлений</span>
+      </a>
+    </div>
+
+    <div class="card">
+      <h2>Контактные данные</h2>
+
+      <label>Логин
+        <input type="text" [value]="profile.username" disabled />
+      </label>
+      <label>Email
+        <input type="email" [(ngModel)]="email" name="email" />
+      </label>
+      <label>Телефон
+        <input type="text" [(ngModel)]="phone" name="phone" maxlength="20" placeholder="+7 777 123 45 67" />
+      </label>
+      <label>Город
+        <input type="text" [(ngModel)]="city" name="city" maxlength="100" placeholder="Алматы" />
+      </label>
+
+      @if (errorMessage) { <div class="alert error">{{ errorMessage }}</div> }
+      @if (successMessage) { <div class="alert success">{{ successMessage }}</div> }
+
+      <div class="actions">
+        <button class="btn-save" (click)="save()" [disabled]="isSaving">
+          {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
+        </button>
+        <button class="btn-logout" (click)="logout()">Выйти</button>
+      </div>
+    </div>
+  } @else {
+    <div class="alert error">{{ errorMessage }}</div>
+  }
+</div>

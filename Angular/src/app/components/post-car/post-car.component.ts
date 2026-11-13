@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
+import { AuthService } from '../../services/auth.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
 
 @Component({
@@ -32,7 +33,8 @@ export class PostCarComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private carService: CarService
+    private carService: CarService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +45,10 @@ export class PostCarComponent implements OnInit {
       this.carId = +id;
       this.carService.getCar(+id).subscribe({
         next: car => {
+          if (car.owner !== this.auth.getUserId()) {
+            this.router.navigate(['/home']);
+            return;
+          }
           this.title = car.title;
           this.brand = car.brand;
           this.price = car.price;

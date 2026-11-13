@@ -39,11 +39,10 @@ export const routes: Routes = [
   loadComponent: () => import('./components/messages/messages.component').then(m => m.MessagesComponent),
   canActivate: [authGuard]
   },
-  { path: '**', redirectTo: 'home' },
-  
   {
-  path: 'messages',
-  loadComponent: () => import('./components/messages/messages.component').then(m => m.MessagesComponent),
-  canActivate: [authGuard]
-}
+    path: 'profile',
+    loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [authGuard]
+  },
+  { path: '**', redirectTo: 'home' }
 ];

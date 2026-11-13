@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { AuthResponse } from '../interfaces/user.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://127.0.0.1:8000/api';
+  private api = '/api';
 
   constructor(private http: HttpClient) {}
 
@@ -17,6 +17,11 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.api}/login/`, data);
   }
 
+  saveTokens(access: string, refresh?: string) {
+    localStorage.setItem('access_token', access);
+    if (refresh) localStorage.setItem('refresh_token', refresh);
+  }
+
   saveToken(token: string) {
     localStorage.setItem('access_token', token);
   }
@@ -25,29 +30,44 @@ export class AuthService {
     return localStorage.getItem('access_token');
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
+  }
+
+  /** Asks the server for a new access token using the refresh token. */
+  refreshAccessToken(): Observable<{ access: string }> {
+    return this.http
+      .post<{ access: string }>(`${this.api}/refresh/`, { refresh: this.getRefreshToken() })
+      .pipe(tap(res => this.saveToken(res.access)));
+  }
+
   logout() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  getUsername(): string {
+  private payload(): any {
     const token = this.getToken();
-    if (!token) return '';
+    if (!token) return {};
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.username || '';
-    } catch { return ''; }
+      const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(escape(atob(part))));
+    } catch { return {}; }
+  }
+
+  getUsername(): string {
+    return this.payload().username || '';
   }
 
   getUserId(): number {
-    const token = this.getToken();
-    if (!token) return 0;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.user_id || 0;
-    } catch { return 0; }
+    return this.payload().user_id || 0;
+  }
+
+  isStaff(): boolean {
+    return !!this.payload().is_staff;
   }
 }

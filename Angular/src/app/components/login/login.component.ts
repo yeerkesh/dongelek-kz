@@ -33,7 +33,7 @@ export class LoginComponent {
     this.errorMessage = '';
     this.auth.login({ username: this.username, password: this.password }).subscribe({
       next: (res) => {
-        this.auth.saveToken(res.access);
+        this.auth.saveTokens(res.access, res.refresh);
         this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {
