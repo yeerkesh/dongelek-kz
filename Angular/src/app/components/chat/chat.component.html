@@ -1,8 +1,8 @@
 <div class="chat-page">
-  <a routerLink="/messages" class="back">← Все сообщения</a>
+  <a routerLink="/messages" class="back">{{ 'chat.back' | t }}</a>
 
   @if (isLoading) {
-    <p class="state">Загрузка...</p>
+    <p class="state">{{ 'common.loading' | t }}</p>
   } @else if (thread) {
     <div class="chat-header">
       <div class="thumb">
@@ -17,11 +17,12 @@
 
     <div class="messages" #list>
       @if (thread.messages.length === 0) {
-        <p class="state">Сообщений пока нет. Напишите первым.</p>
+        <p class="state">{{ 'chat.empty' | t }}</p>
       }
       @for (m of thread.messages; track m.id) {
         <div class="row" [class.mine]="m.sender === myId">
           <div class="bubble">
+            <div class="author">{{ m.sender === myId ? ('msg.you' | t) : m.sender_username }}</div>
             <div class="text">{{ m.text }}</div>
             <div class="time">{{ m.created_at | date: 'dd.MM HH:mm' }}</div>
           </div>
@@ -32,10 +33,10 @@
     @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
 
     <div class="composer">
-      <textarea [(ngModel)]="text" rows="2" placeholder="Ваше сообщение... (Enter — отправить)"
+      <textarea [(ngModel)]="text" rows="2" [placeholder]="'chat.placeholder' | t"
                 (keydown.enter)="onEnter($event)"></textarea>
       <button (click)="send()" [disabled]="!text.trim() || isSending">
-        {{ isSending ? '...' : 'Отправить' }}
+        {{ isSending ? '...' : ('common.send' | t) }}
       </button>
     </div>
   } @else {

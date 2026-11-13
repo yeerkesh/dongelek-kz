@@ -3,11 +3,13 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { filter } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { UnreadService } from '../../services/unread.service';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TPipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
@@ -15,6 +17,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     public auth: AuthService,
     public unread: UnreadService,
+    public i18n: I18nService,
     private router: Router
   ) {}
 

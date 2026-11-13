@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
@@ -8,11 +11,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink, DecimalPipe],
+  imports: [TPipe, FormsModule, RouterLink, DecimalPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+  private i18n = inject(I18nService);
   cars: Car[] = [];
   brands: CarBrand[] = [];
   filteredCars: Car[] = [];
@@ -31,7 +35,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.carService.getBrands().subscribe({
       next: b => this.brands = b,
-      error: () => this.errorMessage = 'Не удалось загрузить марки.'
+      error: () => this.errorMessage = this.i18n.t('error.loadBrands')
     });
     this.loadCars();
   }
@@ -47,7 +51,7 @@ export class HomeComponent implements OnInit {
 	this.cdr.detectChanges();
       },
       error: () => {
-        this.errorMessage = 'Ошибка загрузки. Проверьте подключение к серверу.';
+        this.errorMessage = this.i18n.t('error.loadCars');
         this.isLoading = false;
 	this.cdr.detectChanges();
       }	

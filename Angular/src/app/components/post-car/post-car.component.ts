@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -8,11 +11,12 @@ import { Car, CarBrand } from '../../interfaces/car.interface';
 @Component({
   selector: 'app-post-car',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [TPipe, FormsModule, RouterLink],
   templateUrl: './post-car.component.html',
   styleUrl: './post-car.component.css'
 })
 export class PostCarComponent implements OnInit {
+  private i18n = inject(I18nService);
   isEditMode = false;
   carId: number | null = null;
   brands: CarBrand[] = [];
@@ -58,7 +62,7 @@ export class PostCarComponent implements OnInit {
           this.imageUrl = car.image_url;
           this.isActive = car.is_active;
         },
-        error: () => this.errorMessage = 'Объявление не найдено.'
+        error: () => this.errorMessage = this.i18n.t('error.adNotFound')
       });
     }
   }
@@ -68,7 +72,7 @@ export class PostCarComponent implements OnInit {
   }
 
   submit(): void {
-    if (!this.isFormValid()) { this.errorMessage = 'Заполните все обязательные поля.'; return; }
+    if (!this.isFormValid()) { this.errorMessage = this.i18n.t('error.fillRequired'); return; }
     this.isSubmitting = true;
     this.errorMessage = '';
     const payload = {
@@ -82,12 +86,12 @@ export class PostCarComponent implements OnInit {
 
     req$.subscribe({
       next: (car) => {
-        this.successMessage = this.isEditMode ? 'Обновлено!' : 'Опубликовано!';
+        this.successMessage = this.isEditMode ? this.i18n.t('msg.updated') : this.i18n.t('msg.published');
         this.isSubmitting = false;
         setTimeout(() => this.router.navigate(['/cars', car.id]), 1200);
       },
       error: (err) => {
-        this.errorMessage = err?.error?.detail || 'Ошибка при сохранении.';
+        this.errorMessage = err?.error?.detail || this.i18n.t('error.save');
         this.isSubmitting = false;
       }
     });

@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,11 +12,12 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [TPipe, FormsModule, RouterLink, DatePipe],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent implements OnInit {
+  private i18n = inject(I18nService);
   profile: Profile | null = null;
   email = '';
   phone = '';
@@ -42,7 +46,7 @@ export class ProfileComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.errorMessage = 'Не удалось загрузить профиль.';
+        this.errorMessage = this.i18n.t('error.loadProfile');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -56,12 +60,14 @@ export class ProfileComponent implements OnInit {
     this.profileService.updateProfile({ email: this.email, phone: this.phone, city: this.city }).subscribe({
       next: p => {
         this.profile = p;
-        this.successMessage = 'Профиль сохранён!';
+        this.successMessage = this.i18n.t('profile.saved');
         this.isSaving = false;
         this.cdr.detectChanges();
       },
       error: (err: HttpErrorResponse) => {
-        this.errorMessage = err.error?.error || 'Не удалось сохранить. Проверьте данные.';
+        this.errorMessage = err.error?.code
+          ? this.i18n.t('error.' + err.error.code)
+          : this.i18n.t('error.saveProfile');
         this.isSaving = false;
         this.cdr.detectChanges();
       }

@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -8,11 +11,12 @@ import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [TPipe, FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  private i18n = inject(I18nService);
   username = '';
   password = '';
   isLoading = false;
@@ -26,7 +30,7 @@ export class LoginComponent {
 
   login(): void {
     if (!this.username || !this.password) {
-      this.errorMessage = 'Введите логин и пароль.';
+      this.errorMessage = this.i18n.t('error.enterCreds');
       return;
     }
     this.isLoading = true;
@@ -40,7 +44,7 @@ export class LoginComponent {
         console.log('LOGIN ERROR FULL:', err);
         console.log('LOGIN ERROR BODY:', err.error);
 
-        this.errorMessage = 'Неверный логин или пароль';
+        this.errorMessage = this.i18n.t('error.badCreds');
         this.isLoading = false;
 
         this.cdr.detectChanges();

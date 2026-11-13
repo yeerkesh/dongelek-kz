@@ -21,3 +21,4 @@
 .composer button:disabled { opacity: 0.5; cursor: default; }
 .state { text-align: center; color: #888; margin: auto; }
 .error-banner { background: #fee; color: #c00; padding: 10px 14px; border-radius: 8px; }
+.author { font-size: 0.72rem; font-weight: 700; opacity: 0.75; margin-bottom: 2px; }

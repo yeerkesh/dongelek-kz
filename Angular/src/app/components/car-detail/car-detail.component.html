@@ -1,7 +1,7 @@
 <div class="detail-page">
-  <a routerLink="/home" class="back-link">← Назад к списку</a>
+  <a routerLink="/home" class="back-link">{{ 'detail.back' | t }}</a>
   @if (isLoading) {
-    <div class="loading">Загрузка...</div>
+    <div class="loading">{{ 'common.loading' | t }}</div>
   }
   @if (errorMessage && !car) {
     <div class="error-banner">{{ errorMessage }}</div>
@@ -19,38 +19,38 @@
         <div class="detail-header">
           <h1>{{ car.title }}</h1>
           <span class="status-badge" [class.inactive]="!car.is_active">
-            {{ car.is_active ? 'Активно' : 'Неактивно' }}
+            {{ (car.is_active ? 'common.active' : 'common.inactive') | t }}
           </span>
         </div>
         <p class="detail-price">{{ car.price | number }} ₸</p>
         <div class="detail-specs">
-          <div class="spec"><span>Год</span><strong>{{ car.year }}</strong></div>
-          <div class="spec"><span>Пробег</span><strong>{{ car.mileage | number }} км</strong></div>
+          <div class="spec"><span>{{ 'detail.year' | t }}</span><strong>{{ car.year }}</strong></div>
+          <div class="spec"><span>{{ 'detail.mileage' | t }}</span><strong>{{ car.mileage | number }} {{ 'common.km' | t }}</strong></div>
         </div>
         <p class="detail-description">{{ car.description }}</p>
         @if (auth.isLoggedIn() && +auth.getUserId() === car.owner) {
           <div class="owner-actions">
-            <a [routerLink]="['/post-car', car.id]" class="btn-edit">✏️ Редактировать</a>
-            <button (click)="deleteCar()" class="btn-delete">🗑️ Удалить</button>
+            <a [routerLink]="['/post-car', car.id]" class="btn-edit">✏️ {{ 'post.edit' | t }}</a>
+            <button (click)="deleteCar()" class="btn-delete">🗑️ {{ 'common.delete' | t }}</button>
           </div>
         }
         @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
         @if (successMessage) {
           <div class="success-banner">✅ {{ successMessage }}
-            @if (car) { <a [routerLink]="['/messages', car.id, car.owner]">Открыть переписку</a> }
+            @if (car) { <a [routerLink]="['/messages', car.id, car.owner]">{{ 'detail.openChat' | t }}</a> }
           </div>
         }
         @if (auth.isLoggedIn() && +auth.getUserId() !== car.owner) {
           <div class="message-section">
-            <h3>Написать продавцу</h3>
-            <textarea [(ngModel)]="messageText" placeholder="Ваше сообщение..."
+            <h3>{{ 'detail.writeSeller' | t }}</h3>
+            <textarea [(ngModel)]="messageText" [placeholder]="'detail.messagePh' | t"
                       rows="3" class="message-input"></textarea>
             <button (click)="sendMessage()" [disabled]="!messageText.trim() || sendingMessage" class="btn-send">
-              {{ sendingMessage ? 'Отправка...' : 'Отправить' }}
+              {{ (sendingMessage ? 'common.sending' : 'common.send') | t }}
             </button>
           </div>
         } @else if (!auth.isLoggedIn()) {
-          <p class="login-prompt"><a routerLink="/login">Войдите</a>, чтобы написать продавцу.</p>
+          <p class="login-prompt"><a routerLink="/login">{{ 'detail.loginLink' | t }}</a>{{ 'detail.toWrite' | t }}</p>
         }
       </div>
     </div>

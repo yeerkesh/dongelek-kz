@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
@@ -6,11 +9,12 @@ import { DecimalPipe } from '@angular/common';
 @Component({
   selector: 'app-my-cars',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [TPipe, RouterLink, DecimalPipe],
   templateUrl: './my-cars.component.html',
   styleUrl: './my-cars.component.css'
 })
 export class MyCarsComponent implements OnInit {
+  private i18n = inject(I18nService);
   cars: Car[] = [];
   isLoading = true;
   errorMessage = '';
@@ -23,19 +27,19 @@ export class MyCarsComponent implements OnInit {
     this.isLoading = true;
     this.carService.getMyCars().subscribe({
       next: cars => { this.cars = cars; this.isLoading = false; this.cdr.detectChanges(); },
-      error: () => { this.errorMessage = 'Не удалось загрузить ваши объявления.'; this.isLoading = false; this.cdr.detectChanges(); }
+      error: () => { this.errorMessage = this.i18n.t('error.loadMyCars'); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
   deleteCar(id: number): void {
-    if (!confirm('Удалить объявление?')) return;
+    if (!confirm(this.i18n.t('confirm.deleteAd'))) return;
     this.carService.deleteCar(id).subscribe({
       next: () => {
         this.cars = this.cars.filter(c => c.id !== id);
-        this.successMessage = 'Объявление удалено.';
+        this.successMessage = this.i18n.t('msg.adDeleted');
         this.cdr.detectChanges();
         setTimeout(() => { this.successMessage = ''; this.cdr.detectChanges(); }, 3000);
       },
-      error: () => { this.errorMessage = 'Ошибка при удалении.'; this.cdr.detectChanges(); }
+      error: () => { this.errorMessage = this.i18n.t('error.delete'); this.cdr.detectChanges(); }
     });
   }
 }

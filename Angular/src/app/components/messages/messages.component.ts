@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -7,11 +10,12 @@ import { UnreadService } from '../../services/unread.service';
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [TPipe, RouterLink, DatePipe],
   templateUrl: './messages.component.html',
   styleUrl: './messages.component.css'
 })
 export class MessagesComponent implements OnInit {
+  private i18n = inject(I18nService);
   conversations: Conversation[] = [];
   isLoading = true;
   errorMessage = '';
@@ -30,7 +34,7 @@ export class MessagesComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.errorMessage = 'Не удалось загрузить сообщения.';
+        this.errorMessage = this.i18n.t('error.loadMessages');
         this.isLoading = false;
         this.cdr.detectChanges();
       }

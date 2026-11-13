@@ -1,12 +1,12 @@
 <div class="messages-page">
-  <h2>Сообщения</h2>
+  <h2>{{ 'nav.messages' | t }}</h2>
 
   @if (isLoading) {
-    <div class="loading">Загрузка...</div>
+    <div class="loading">{{ 'common.loading' | t }}</div>
   } @else if (errorMessage) {
     <div class="error-banner">{{ errorMessage }}</div>
   } @else if (conversations.length === 0) {
-    <p class="empty">Сообщений пока нет. Откройте объявление и напишите продавцу.</p>
+    <p class="empty">{{ 'msg.none' | t }}</p>
   } @else {
     @for (c of conversations; track c.car_id + '-' + c.other_user_id) {
       <a class="conv" [class.unread]="c.unread > 0" [routerLink]="['/messages', c.car_id, c.other_user_id]">
@@ -21,7 +21,7 @@
           </div>
           <div class="car">{{ c.car_title }}</div>
           <div class="preview">
-            @if (c.last_from_me) { <span class="you">Вы: </span> }{{ c.last_text }}
+            <span class="you">{{ c.last_from_me ? ('msg.you' | t) : c.other_username }}: </span>{{ c.last_text }}
           </div>
         </div>
         @if (c.unread > 0) { <span class="count">{{ c.unread }}</span> }

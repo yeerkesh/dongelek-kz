@@ -22,3 +22,7 @@
 .btn-logout:hover { border-color: #e94560; color: #e94560; }
 .msg-link { position: relative; display: inline-flex; align-items: center; gap: 6px; }
 .badge { background: #e94560; color: #fff; font-size: 0.7rem; font-weight: 700; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; }
+.lang { display: flex; border: 1px solid #3a3a5a; border-radius: 8px; overflow: hidden; }
+.lang button { background: none; border: none; color: #aaa; padding: 5px 9px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+.lang button:hover { color: #fff; }
+.lang button.active { background: #e94560; color: #fff; }

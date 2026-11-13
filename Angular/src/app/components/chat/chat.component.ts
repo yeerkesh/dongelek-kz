@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { I18nService } from '../../services/i18n.service';
+import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -9,11 +12,12 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [TPipe, FormsModule, RouterLink, DatePipe],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css'
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  private i18n = inject(I18nService);
   @ViewChild('list') list?: ElementRef<HTMLDivElement>;
 
   thread: Thread | null = null;
@@ -59,7 +63,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.unread.refresh();
       },
       error: () => {
-        if (first) this.errorMessage = 'Не удалось открыть переписку.';
+        if (first) this.errorMessage = this.i18n.t('error.openChat');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -77,9 +81,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.isSending = false;
         this.load(false);
       },
-      error: err => {
-        const detail = err.error?.non_field_errors?.[0];
-        this.errorMessage = detail || 'Не удалось отправить сообщение.';
+      error: () => {
+        this.errorMessage = this.i18n.t('error.sendMessage');
         this.isSending = false;
         this.cdr.detectChanges();
       }

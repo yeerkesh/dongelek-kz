@@ -60,19 +60,19 @@ def register_view(request):
 
     if not username or not email or not password:
         return Response(
-            {'error': 'Username, email and password are required'},
+            {'error': 'Username, email and password are required', 'code': 'required'},
             status=400
         )
 
     if User.objects.filter(username=username).exists():
         return Response(
-            {'error': 'Такой логин уже существует'},
+            {'error': 'Username already exists', 'code': 'username_taken'},
             status=400
         )
 
     if User.objects.filter(email=email).exists():
         return Response(
-           {'error': 'Такой email уже существует'},
+            {'error': 'Email already exists', 'code': 'email_taken'},
             status=400
         )
 
@@ -186,7 +186,7 @@ class ProfileAPIView(APIView):
 
         if 'email' in data and data['email'] != user.email:
             if data['email'] and User.objects.filter(email=data['email']).exclude(pk=user.pk).exists():
-                return Response({'error': 'Такой email уже существует'}, status=400)
+                return Response({'error': 'Email already exists', 'code': 'email_taken'}, status=400)
             user.email = data['email']
             user.save()
         if 'phone' in data:

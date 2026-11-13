@@ -1,27 +1,27 @@
 <div class="home-page">
   <div class="hero">
-    <h1>Авто объявления Казахстана</h1>
-    <p>Найдите или продайте авто быстро и удобно</p>
+    <h1>{{ 'home.title' | t }}</h1>
+    <p>{{ 'home.subtitle' | t }}</p>
   </div>
 
   <div class="filters">
-    <input type="text" placeholder="Поиск..." [(ngModel)]="searchQuery"
+    <input type="text" [placeholder]="'home.search' | t" [(ngModel)]="searchQuery"
            (ngModelChange)="applyFilters()" class="filter-input search-input" />
 
     <select [(ngModel)]="selectedBrand" (ngModelChange)="applyFilters()" class="filter-input">
-      <option value="">Все марки</option>
+      <option value="">{{ 'home.allBrands' | t }}</option>
       @for (b of brands; track b.id) {
         <option [value]="b.id">{{ b.name }}</option>
       }
     </select>
 
-    <input type="number" placeholder="Цена от (₸)" [(ngModel)]="minPrice"
+    <input type="number" [placeholder]="'home.priceFrom' | t" [(ngModel)]="minPrice"
            (ngModelChange)="applyFilters()" class="filter-input" />
-    <input type="number" placeholder="Цена до (₸)" [(ngModel)]="maxPrice"
+    <input type="number" [placeholder]="'home.priceTo' | t" [(ngModel)]="maxPrice"
            (ngModelChange)="applyFilters()" class="filter-input" />
 
-    <button (click)="resetFilters()" class="btn-reset">Сбросить</button>
-    <button (click)="loadCars()" class="btn-refresh">Обновить</button>
+    <button (click)="resetFilters()" class="btn-reset">{{ 'home.reset' | t }}</button>
+    <button (click)="loadCars()" class="btn-refresh">{{ 'home.refresh' | t }}</button>
   </div>
 
   @if (errorMessage) {
@@ -29,13 +29,13 @@
   }
 
   @if (isLoading) {
-    <div class="loading">Загрузка объявлений...</div>
+    <div class="loading">{{ 'home.loading' | t }}</div>
   } @else {
-    <p class="results-count">Найдено: <strong>{{ filteredCars.length }}</strong> объявлений</p>
+    <p class="results-count">{{ 'home.found' | t }}: <strong>{{ filteredCars.length }}</strong> {{ 'home.adsWord' | t }}</p>
 
     <div class="cars-grid">
       @if (filteredCars.length === 0) {
-        <div class="empty-state">Объявления не найдены.</div>
+        <div class="empty-state">{{ 'home.empty' | t }}</div>
       }
       @for (car of filteredCars; track car.id) {
         <a [routerLink]="['/cars', car.id]" class="car-card">
@@ -46,13 +46,13 @@
               <div class="no-image">🚗</div>
             }
             @if (!car.is_active) {
-              <span class="car-badge">Неактивно</span>
+              <span class="car-badge">{{ 'common.inactive' | t }}</span>
             }
           </div>
           <div class="car-info">
             <h3>{{ car.title }}</h3>
-            <p class="car-meta">{{ getBrandName(car.brand) }} · {{ car.year }} г.</p>
-            <p class="car-mileage">{{ car.mileage | number }} км</p>
+            <p class="car-meta">{{ getBrandName(car.brand) }} · {{ car.year }} {{ 'common.yearSuffix' | t }}</p>
+            <p class="car-mileage">{{ car.mileage | number }} {{ 'common.km' | t }}</p>
             <p class="car-price">{{ car.price | number }} ₸</p>
           </div>
         </a>
