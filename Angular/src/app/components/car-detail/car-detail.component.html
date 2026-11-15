@@ -1,58 +1,120 @@
 <div class="detail-page">
-  <a routerLink="/home" class="back-link">{{ 'detail.back' | t }}</a>
   @if (isLoading) {
     <div class="loading">{{ 'common.loading' | t }}</div>
   }
   @if (errorMessage && !car) {
     <div class="error-banner">{{ errorMessage }}</div>
   }
+
   @if (car && !isLoading) {
-    <div class="detail-card">
-      <div class="detail-image">
-        @if (car.image_url) {
-          <img [src]="car.image_url" [alt]="car.title" />
-        } @else {
-          <div class="no-image">🚗</div>
-        }
-      </div>
-      <div class="detail-content">
-        <div class="detail-header">
-          <h1>{{ car.title }}</h1>
-          <span class="status-badge" [class.inactive]="!car.is_active">
-            {{ (car.is_active ? 'common.active' : 'common.inactive') | t }}
-          </span>
-        </div>
-        <p class="detail-price">{{ car.price | number }} ₸</p>
-        <div class="detail-specs">
-          <div class="spec"><span>{{ 'detail.year' | t }}</span><strong>{{ car.year }}</strong></div>
-          <div class="spec"><span>{{ 'detail.mileage' | t }}</span><strong>{{ car.mileage | number }} {{ 'common.km' | t }}</strong></div>
-        </div>
-        <p class="detail-description">{{ car.description }}</p>
-        @if (auth.isLoggedIn() && +auth.getUserId() === car.owner) {
-          <div class="owner-actions">
-            <a [routerLink]="['/post-car', car.id]" class="btn-edit">✏️ {{ 'post.edit' | t }}</a>
-            <button (click)="deleteCar()" class="btn-delete">🗑️ {{ 'common.delete' | t }}</button>
-          </div>
-        }
-        @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
-        @if (successMessage) {
-          <div class="success-banner">✅ {{ successMessage }}
-            @if (car) { <a [routerLink]="['/messages', car.id, car.owner]">{{ 'detail.openChat' | t }}</a> }
-          </div>
-        }
-        @if (auth.isLoggedIn() && +auth.getUserId() !== car.owner) {
-          <div class="message-section">
-            <h3>{{ 'detail.writeSeller' | t }}</h3>
-            <textarea [(ngModel)]="messageText" [placeholder]="'detail.messagePh' | t"
-                      rows="3" class="message-input"></textarea>
-            <button (click)="sendMessage()" [disabled]="!messageText.trim() || sendingMessage" class="btn-send">
-              {{ (sendingMessage ? 'common.sending' : 'common.send') | t }}
+    <nav class="crumbs">
+      <a routerLink="/home">{{ 'detail.home' | t }}</a> /
+      <a routerLink="/home" [queryParams]="{ brand: car.brand }">{{ car.brand_name }}</a> /
+      <span>{{ car.title }}</span>
+    </nav>
+
+    <div class="title-row">
+      <h1>{{ car.title }} {{ car.year }} {{ 'common.yearSuffix' | t }}</h1>
+      <span class="status-badge" [class.inactive]="!car.is_active">
+        {{ (car.is_active ? 'common.active' : 'common.inactive') | t }}
+      </span>
+      @if (isOwner) {
+        <a [routerLink]="['/post-car', car.id]" class="btn-edit">✏️ {{ 'post.edit' | t }}</a>
+        <button (click)="deleteCar()" class="btn-delete">🗑️ {{ 'common.delete' | t }}</button>
+      }
+    </div>
+    <div class="price">{{ car.price | price }} ₸</div>
+
+    @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
+
+    <div class="layout">
+      <aside class="left">
+        <table class="specs">
+          @for (row of specs; track row.label) {
+            <tr><th>{{ row.label }}</th><td>{{ row.value }}</td></tr>
+          }
+        </table>
+
+        <div class="contacts">
+          <div class="contacts-title">{{ 'detail.contacts' | t }}</div>
+          @if (car.owner_username) {
+            <a class="seller" [routerLink]="['/seller', car.owner]">
+              <span class="avatar">{{ car.owner_username.charAt(0).toUpperCase() }}</span>
+              {{ car.owner_username }}
+            </a>
+          }
+
+          @if (car.has_phone) {
+            <div class="phone-row">
+              @if (phone) {
+                <a class="phone" [href]="'tel:' + phone">{{ phone }}</a>
+              } @else {
+                <span class="phone masked">+7 ••• ••• •• ••</span>
+                <button class="link-btn" (click)="showPhone()" [disabled]="phoneLoading">
+                  {{ 'detail.showPhone' | t }}
+                </button>
+              }
+            </div>
+            @if (phoneError) { <div class="small-error">{{ phoneError }}</div> }
+          }
+
+          @if (isOwner) {
+            <p class="own-note">{{ 'detail.yourAd' | t }}</p>
+          } @else if (auth.isLoggedIn()) {
+            <button class="btn-write" (click)="showMessageBox = !showMessageBox">
+              {{ 'detail.writeMessage' | t }}
             </button>
+            @if (showMessageBox) {
+              <textarea [(ngModel)]="messageText" [placeholder]="'detail.messagePh' | t"
+                        rows="3" class="message-input"></textarea>
+              <button (click)="sendMessage()" [disabled]="!messageText.trim() || sendingMessage" class="btn-send">
+                {{ (sendingMessage ? 'common.sending' : 'common.send') | t }}
+              </button>
+            }
+            @if (successMessage) {
+              <div class="success-banner">✅ {{ successMessage }}
+                <a [routerLink]="['/messages', car.id, car.owner]">{{ 'detail.openChat' | t }}</a>
+              </div>
+            }
+          } @else {
+            <p class="login-prompt"><a routerLink="/login">{{ 'detail.loginLink' | t }}</a>{{ 'detail.toWrite' | t }}</p>
+          }
+        </div>
+      </aside>
+
+      <section class="right">
+        <div class="gallery">
+          <div class="main-photo">
+            @if (photos.length > 0) {
+              <img [src]="photos[selectedPhoto]" [alt]="car.title" />
+              @if (photos.length > 1) {
+                <button class="arrow prev" (click)="step(-1)" aria-label="Previous">‹</button>
+                <button class="arrow next" (click)="step(1)" aria-label="Next">›</button>
+                <span class="counter">{{ selectedPhoto + 1 }} / {{ photos.length }}</span>
+              }
+            } @else {
+              <div class="no-image">🚗</div>
+            }
           </div>
-        } @else if (!auth.isLoggedIn()) {
-          <p class="login-prompt"><a routerLink="/login">{{ 'detail.loginLink' | t }}</a>{{ 'detail.toWrite' | t }}</p>
-        }
-      </div>
+          @if (photos.length > 1) {
+            <div class="thumbs">
+              @for (url of photos; track $index) {
+                <button class="thumb" [class.active]="$index === selectedPhoto" (click)="selectPhoto($index)">
+                  <img [src]="url" alt="" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <h2>{{ 'detail.sellerComment' | t }}</h2>
+        <p class="description">{{ car.description }}</p>
+
+        <p class="footnote">
+          {{ 'detail.views' | t: { n: car.views_count ?? 0 } }}
+          · {{ 'detail.posted' | t }} {{ car.created_at | date: 'dd.MM.yyyy' }}
+        </p>
+      </section>
     </div>
   }
 </div>

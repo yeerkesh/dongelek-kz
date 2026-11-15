@@ -15,6 +15,7 @@ urlpatterns = [
     path('unread-count/', views.UnreadCountAPIView.as_view()),
     path('cars-cbv/', views.CarListCreateAPIView.as_view()),
     path('cars-cbv/<int:pk>/', views.CarDetailAPIView.as_view()),
+    path('cars-cbv/<int:pk>/phone/', views.CarPhoneAPIView.as_view()),
     path('my-cars/', views.MyCarsAPIView.as_view()),
     path('profile/', views.ProfileAPIView.as_view()),
     path('search/', views.SearchAPIView.as_view()),

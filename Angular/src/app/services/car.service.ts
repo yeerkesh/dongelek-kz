@@ -22,6 +22,10 @@ export class CarService {
     return this.http.get<Car>(`${this.api}/cars-cbv/${id}/`);
   }
 
+  getCarPhone(id: number): Observable<{ phone: string }> {
+    return this.http.get<{ phone: string }>(`${this.api}/cars-cbv/${id}/phone/`);
+  }
+
   createCar(data: any): Observable<Car> {
     return this.http.post<Car>(`${this.api}/cars-cbv/`, data, { headers: this.authHeaders() });
   }

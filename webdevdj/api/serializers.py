@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import CarBrand, Car, Message, Profile
+from .models import CarBrand, Car, CarImage, Message, Profile
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -21,9 +21,57 @@ class CarBrandSerializer(serializers.ModelSerializer):
 
 
 class CarSerializer(serializers.ModelSerializer):
+    brand_name = serializers.CharField(source='brand.name', read_only=True)
+    owner_username = serializers.CharField(source='owner.username', read_only=True)
+    # additional photos: a list of URLs (the main photo is image_url)
+    images = serializers.SerializerMethodField()
+    extra_images = serializers.ListField(
+        child=serializers.URLField(max_length=500),
+        required=False, write_only=True, max_length=10,
+    )
+    has_phone = serializers.SerializerMethodField()
+
     class Meta:
         model = Car
         fields = '__all__'
+        read_only_fields = ['views_count']
+
+    def get_images(self, obj):
+        return [img.url for img in obj.images.all()]
+
+    def get_has_phone(self, obj):
+        return bool(obj.contact_phone)
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # the phone number is not sent to everybody:
+        # visitors get it by pressing "Show phone", the owner sees it in the edit form
+        request = self.context.get('request')
+        is_owner = bool(
+            request and request.user.is_authenticated and instance.owner_id == request.user.id
+        )
+        if not is_owner:
+            data.pop('phone', None)
+        return data
+
+    def _save_images(self, car, urls):
+        car.images.all().delete()
+        CarImage.objects.bulk_create(
+            [CarImage(car=car, url=url, position=i) for i, url in enumerate(urls)]
+        )
+
+    def create(self, validated_data):
+        urls = validated_data.pop('extra_images', [])
+        car = super().create(validated_data)
+        self._save_images(car, urls)
+        return car
+
+    def update(self, instance, validated_data):
+        urls = validated_data.pop('extra_images', None)
+        car = super().update(instance, validated_data)
+        if urls is not None:
+            self._save_images(car, urls)
+        return car
 
 
 class MessageSerializer(serializers.ModelSerializer):

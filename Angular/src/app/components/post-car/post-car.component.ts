@@ -30,6 +30,24 @@ export class PostCarComponent implements OnInit {
   imageUrl = '';
   isActive = true;
 
+  // details of the car
+  city = '';
+  bodyType = '';
+  engineVolume: number | '' = '';
+  fuelType = '';
+  transmission = '';
+  drive = '';
+  steering = 'left';
+  customsCleared = true;
+  phone = '';
+  extraImages = '';   // one link per line
+
+  readonly bodyTypes = ['sedan', 'suv', 'hatchback', 'wagon', 'coupe', 'minivan', 'pickup', 'other'];
+  readonly fuelTypes = ['petrol', 'diesel', 'gas', 'hybrid', 'electric'];
+  readonly transmissions = ['automatic', 'manual', 'robot', 'cvt'];
+  readonly drives = ['front', 'rear', 'full'];
+  readonly steerings = ['left', 'right'];
+
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
@@ -61,6 +79,16 @@ export class PostCarComponent implements OnInit {
           this.description = car.description;
           this.imageUrl = car.image_url;
           this.isActive = car.is_active;
+          this.city = car.city ?? '';
+          this.bodyType = car.body_type ?? '';
+          this.engineVolume = car.engine_volume ?? '';
+          this.fuelType = car.fuel_type ?? '';
+          this.transmission = car.transmission ?? '';
+          this.drive = car.drive ?? '';
+          this.steering = car.steering || 'left';
+          this.customsCleared = car.customs_cleared !== false;
+          this.phone = car.phone ?? '';
+          this.extraImages = (car.images ?? []).join('\n');
         },
         error: () => this.errorMessage = this.i18n.t('error.adNotFound')
       });
@@ -78,7 +106,17 @@ export class PostCarComponent implements OnInit {
     const payload = {
       title: this.title, brand: +this.brand, price: +this.price,
       year: +this.year, mileage: +this.mileage, description: this.description,
-      image_url: this.imageUrl, is_active: this.isActive
+      image_url: this.imageUrl, is_active: this.isActive,
+      city: this.city.trim(),
+      body_type: this.bodyType,
+      engine_volume: this.engineVolume === '' ? null : +this.engineVolume,
+      fuel_type: this.fuelType,
+      transmission: this.transmission,
+      drive: this.drive,
+      steering: this.steering,
+      customs_cleared: this.customsCleared,
+      phone: this.phone.trim(),
+      extra_images: this.extraImages.split('\n').map(u => u.trim()).filter(u => u)
     };
     const req$ = this.isEditMode && this.carId
       ? this.carService.updateCar(this.carId, payload)
@@ -91,7 +129,10 @@ export class PostCarComponent implements OnInit {
         setTimeout(() => this.router.navigate(['/cars', car.id]), 1200);
       },
       error: (err) => {
-        this.errorMessage = err?.error?.detail || this.i18n.t('error.save');
+        const e = err?.error;
+        this.errorMessage = (e?.extra_images || e?.image_url)
+          ? this.i18n.t('error.badPhotoUrls')
+          : (e?.detail || this.i18n.t('error.save'));
         this.isSubmitting = false;
       }
     });

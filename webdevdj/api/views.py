@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 
@@ -88,19 +88,24 @@ def register_view(request):
         'email': user.email
     }, status=201)
 
+def _cars_queryset():
+    """Cars with everything the serializer needs (fewer database queries)."""
+    return Car.objects.select_related('brand', 'owner', 'owner__profile').prefetch_related('images')
+
+
 class CarListCreateAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request):
-        cars = Car.objects.all()
-        serializer = CarSerializer(cars, many=True)
+        cars = _cars_queryset()
+        serializer = CarSerializer(cars, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
         if not request.user.is_authenticated:
             return Response({'error': 'Authentication required'}, status=401)
 
-        serializer = CarSerializer(data=request.data)
+        serializer = CarSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -111,11 +116,17 @@ class CarDetailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_object(self, pk):
-        return get_object_or_404(Car, pk=pk)
+        return get_object_or_404(_cars_queryset(), pk=pk)
 
     def get(self, request, pk):
         car = self.get_object(pk)
-        serializer = CarSerializer(car)
+
+        # count the view (the owner looking at his own ad is not counted)
+        if car.owner_id != (request.user.id if request.user.is_authenticated else None):
+            Car.objects.filter(pk=car.pk).update(views_count=F('views_count') + 1)
+            car.views_count += 1
+
+        serializer = CarSerializer(car, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -124,7 +135,7 @@ class CarDetailAPIView(APIView):
         if car.owner != request.user:
             return Response({'error': 'You can edit only your own car'}, status=403)
 
-        serializer = CarSerializer(car, data=request.data)
+        serializer = CarSerializer(car, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(serializer.data)
@@ -138,14 +149,28 @@ class CarDetailAPIView(APIView):
 
         car.delete()
         return Response(status=204)
-    
+
+
+class CarPhoneAPIView(APIView):
+    """Shows the phone number of the ad (the "Show phone" button)."""
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        car = get_object_or_404(_cars_queryset(), pk=pk)
+        phone = car.contact_phone
+        if not phone:
+            return Response({'error': 'No phone number'}, status=404)
+        return Response({'phone': phone})
+
+
 class MyCarsAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        cars = Car.objects.filter(owner=request.user)
-        serializer = CarSerializer(cars, many=True)
+        cars = _cars_queryset().filter(owner=request.user)
+        serializer = CarSerializer(cars, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class MyMessagesAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -298,6 +323,7 @@ def _car_card(car):
         'mileage': car.mileage,
         'image_url': car.image_url,
         'owner': car.owner_id,
+        'city': car.city,
     }
 
 
@@ -327,6 +353,8 @@ class SearchAPIView(APIView):
                 score += 2
             if q == str(car.year):
                 score += 2
+            if q in _norm(car.city):
+                score += 1
             if q in _norm(car.description):
                 score += 1
             if score:

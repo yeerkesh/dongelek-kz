@@ -51,7 +51,7 @@
           </div>
           <div class="car-info">
             <h3>{{ car.title }}</h3>
-            <p class="car-meta">{{ getBrandName(car.brand) }} · {{ car.year }} {{ 'common.yearSuffix' | t }}</p>
+            <p class="car-meta">{{ getBrandName(car.brand) }} · {{ car.year }} {{ 'common.yearSuffix' | t }}@if (car.city) { · {{ car.city }} }</p>
             <p class="car-mileage">{{ car.mileage | number }} {{ 'common.km' | t }}</p>
             <p class="car-price">{{ car.price | number }} ₸</p>
           </div>

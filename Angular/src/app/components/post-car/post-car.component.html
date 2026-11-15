@@ -5,6 +5,8 @@
     @if (errorMessage) { <div class="error-banner">⚠️ {{ errorMessage }}</div> }
     @if (successMessage) { <div class="success-banner">✅ {{ successMessage }}</div> }
 
+    <h3 class="section">{{ 'post.sectionMain' | t }}</h3>
+
     <div class="form-group">
       <label>{{ 'post.titleLabel' | t }}</label>
       <input type="text" [(ngModel)]="title" placeholder="Toyota Camry 2020..." class="form-control" />
@@ -37,11 +39,66 @@
       </div>
     </div>
 
+    <h3 class="section">{{ 'post.sectionDetails' | t }}</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'post.body' | t }}</label>
+        <select [(ngModel)]="bodyType" class="form-control">
+          <option value="">{{ 'post.notSpecified' | t }}</option>
+          @for (o of bodyTypes; track o) { <option [value]="o">{{ 'body.' + o | t }}</option> }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>{{ 'post.engine' | t }}</label>
+        <input type="number" step="0.1" min="0" [(ngModel)]="engineVolume" placeholder="2.0" class="form-control" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'post.fuel' | t }}</label>
+        <select [(ngModel)]="fuelType" class="form-control">
+          <option value="">{{ 'post.notSpecified' | t }}</option>
+          @for (o of fuelTypes; track o) { <option [value]="o">{{ 'fuel.' + o | t }}</option> }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>{{ 'post.transmission' | t }}</label>
+        <select [(ngModel)]="transmission" class="form-control">
+          <option value="">{{ 'post.notSpecified' | t }}</option>
+          @for (o of transmissions; track o) { <option [value]="o">{{ 'tr.' + o | t }}</option> }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'post.drive' | t }}</label>
+        <select [(ngModel)]="drive" class="form-control">
+          <option value="">{{ 'post.notSpecified' | t }}</option>
+          @for (o of drives; track o) { <option [value]="o">{{ 'drive.' + o | t }}</option> }
+        </select>
+      </div>
+      <div class="form-group">
+        <label>{{ 'post.steering' | t }}</label>
+        <select [(ngModel)]="steering" class="form-control">
+          @for (o of steerings; track o) { <option [value]="o">{{ 'steer.' + o | t }}</option> }
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label><input type="checkbox" [(ngModel)]="customsCleared" /> {{ 'post.customs' | t }}</label>
+    </div>
+
     <div class="form-group">
       <label>{{ 'post.description' | t }}</label>
       <textarea [(ngModel)]="description" rows="4" class="form-control"
                 [placeholder]="'post.descriptionPh' | t"></textarea>
     </div>
+
+    <h3 class="section">{{ 'post.sectionPhotos' | t }}</h3>
 
     <div class="form-group">
       <label>{{ 'post.photoUrl' | t }}</label>
@@ -50,6 +107,25 @@
         <div class="image-preview"><img [src]="imageUrl" alt="Preview" /></div>
       }
     </div>
+
+    <div class="form-group">
+      <label>{{ 'post.extraPhotos' | t }}</label>
+      <textarea [(ngModel)]="extraImages" rows="4" class="form-control" placeholder="https://..."></textarea>
+    </div>
+
+    <h3 class="section">{{ 'post.sectionContacts' | t }}</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'post.city' | t }}</label>
+        <input type="text" [(ngModel)]="city" maxlength="100" [placeholder]="'profile.cityPh' | t" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'post.phone' | t }}</label>
+        <input type="text" [(ngModel)]="phone" maxlength="20" placeholder="+7 777 123 45 67" class="form-control" />
+      </div>
+    </div>
+    <p class="hint">{{ 'post.phoneHint' | t }}</p>
 
     <div class="form-group checkbox-group">
       <label><input type="checkbox" [(ngModel)]="isActive" /> {{ 'post.isActive' | t }}</label>
