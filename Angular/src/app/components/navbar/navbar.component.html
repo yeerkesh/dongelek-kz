@@ -1,6 +1,11 @@
 <nav class="navbar">
   <a routerLink="/home" class="brand">Дөңгелек.kz</a>
 
+  <div class="search">
+    <input #q type="search" [placeholder]="'search.placeholder' | t" (keyup.enter)="search(q.value)" />
+    <button type="button" (click)="search(q.value)" aria-label="Search">🔍</button>
+  </div>
+
   <div class="nav-links">
     <a routerLink="/home" routerLinkActive="active">{{ 'nav.ads' | t }}</a>
 

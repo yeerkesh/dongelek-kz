@@ -26,3 +26,10 @@
 .lang button { background: none; border: none; color: #aaa; padding: 5px 9px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
 .lang button:hover { color: #fff; }
 .lang button.active { background: #e94560; color: #fff; }
+.search { flex: 1; max-width: 340px; margin: 0 20px; display: flex; }
+.search input { flex: 1; min-width: 0; padding: 7px 12px; border: 1px solid #3a3a5a; border-right: none; border-radius: 20px 0 0 20px; background: #252540; color: #fff; font-size: 0.85rem; }
+.search input::placeholder { color: #888; }
+.search input:focus { outline: none; border-color: #e94560; }
+.search button { border: 1px solid #3a3a5a; border-left: none; border-radius: 0 20px 20px 0; background: #252540; color: #fff; padding: 0 12px; cursor: pointer; }
+.search button:hover { background: #e94560; border-color: #e94560; }
+@media (max-width: 900px) { .search { display: none; } }

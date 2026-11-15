@@ -28,6 +28,11 @@ export class NavbarComponent implements OnInit {
       .subscribe(() => this.unread.refresh());
   }
 
+  search(value: string): void {
+    const q = value.trim();
+    if (q) this.router.navigate(['/search'], { queryParams: { q } });
+  }
+
   logout(): void {
     this.auth.logout();
     this.unread.refresh();

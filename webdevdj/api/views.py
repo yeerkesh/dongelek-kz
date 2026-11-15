@@ -5,7 +5,7 @@ from .models import CarBrand, Car, Message, Profile
 from .serializers import CarBrandSerializer, CarSerializer, MessageSerializer, ProfileSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
@@ -277,3 +277,111 @@ class UnreadCountAPIView(APIView):
     def get(self, request):
         count = Message.objects.filter(receiver=request.user, is_read=False).count()
         return Response({'count': count})
+
+
+# ----------- SEARCH -----------
+
+def _norm(text):
+    """Lower-case text for comparison. Done in Python because SQLite
+    compares only Latin letters case-insensitively (Cyrillic would fail)."""
+    return (text or '').casefold()
+
+
+def _car_card(car):
+    return {
+        'id': car.id,
+        'title': car.title,
+        'brand': car.brand_id,
+        'brand_name': car.brand.name,
+        'price': car.price,
+        'year': car.year,
+        'mileage': car.mileage,
+        'image_url': car.image_url,
+        'owner': car.owner_id,
+    }
+
+
+class SearchAPIView(APIView):
+    """Global search over three kinds of data: cars, brands and sellers.
+    GET /api/search/?q=text"""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        raw = request.query_params.get('q', '').strip()
+        q = _norm(raw)
+        result = {'query': raw, 'cars': [], 'brands': [], 'sellers': []}
+        if len(q) < 2:
+            return Response(result)
+
+        active_cars = list(
+            Car.objects.filter(is_active=True).select_related('brand', 'owner')
+        )
+
+        # --- cars: title (best) > brand / year > description
+        scored = []
+        for car in active_cars:
+            score = 0
+            if q in _norm(car.title):
+                score += 3
+            if q in _norm(car.brand.name):
+                score += 2
+            if q == str(car.year):
+                score += 2
+            if q in _norm(car.description):
+                score += 1
+            if score:
+                scored.append((score, car))
+        scored.sort(key=lambda item: (-item[0], -item[1].id))
+        result['cars'] = [_car_card(car) for _, car in scored[:30]]
+
+        # --- brands (with the number of active cars)
+        counts = {}
+        for car in active_cars:
+            counts[car.brand_id] = counts.get(car.brand_id, 0) + 1
+        for brand in CarBrand.objects.all():
+            if q in _norm(brand.name):
+                result['brands'].append({
+                    'id': brand.id,
+                    'name': brand.name,
+                    'cars_count': counts.get(brand.id, 0),
+                })
+
+        # --- sellers: users who have active cars, by username or city
+        sellers = {}
+        for car in active_cars:
+            if car.owner_id is None:
+                continue
+            seller = sellers.setdefault(car.owner_id, {'user': car.owner, 'cars_count': 0})
+            seller['cars_count'] += 1
+        profiles = {p.user_id: p for p in Profile.objects.filter(user_id__in=sellers.keys())}
+        for user_id, data in sellers.items():
+            profile = profiles.get(user_id)
+            city = profile.city if profile else ''
+            if q in _norm(data['user'].username) or q in _norm(city):
+                result['sellers'].append({
+                    'id': user_id,
+                    'username': data['user'].username,
+                    'city': city,
+                    'cars_count': data['cars_count'],
+                })
+        result['sellers'] = result['sellers'][:10]
+
+        return Response(result)
+
+
+class SellerAPIView(APIView):
+    """Public page of a seller: name, city and his active cars.
+    (no email and no phone are shown)"""
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        profile = Profile.objects.filter(user=user).first()
+        cars = Car.objects.filter(owner=user, is_active=True).select_related('brand').order_by('-id')
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'city': profile.city if profile else '',
+            'date_joined': user.date_joined,
+            'cars': [_car_card(car) for car in cars],
+        })

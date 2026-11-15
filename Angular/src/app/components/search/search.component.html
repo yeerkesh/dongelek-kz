@@ -1,0 +1,76 @@
+<div class="search-page">
+  <h1>{{ 'search.title' | t }}</h1>
+
+  <div class="search-bar">
+    <input type="search" [(ngModel)]="input" [placeholder]="'search.placeholder' | t"
+           (keyup.enter)="submit()" />
+    <button (click)="submit()">{{ 'search.button' | t }}</button>
+  </div>
+
+  @if (query.length < 2) {
+    <p class="state">{{ 'search.hint' | t }}</p>
+  } @else if (isLoading) {
+    <p class="state">{{ 'common.loading' | t }}</p>
+  } @else if (errorMessage) {
+    <div class="error-banner">⚠️ {{ errorMessage }}</div>
+  } @else if (result) {
+    <p class="query">{{ 'search.for' | t }}: <strong>«{{ query }}»</strong></p>
+
+    @if (total === 0) {
+      <div class="empty">🔎 {{ 'search.none' | t }}</div>
+    }
+
+    @if (result.brands.length > 0) {
+      <section>
+        <h2>{{ 'search.brands' | t }} <span class="count">{{ result.brands.length }}</span></h2>
+        <div class="chips">
+          @for (b of result.brands; track b.id) {
+            <a class="chip" routerLink="/home" [queryParams]="{ brand: b.id }">
+              <strong>{{ b.name }}</strong>
+              <span>{{ 'search.adsCount' | t: { n: b.cars_count } }}</span>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    @if (result.sellers.length > 0) {
+      <section>
+        <h2>{{ 'search.sellers' | t }} <span class="count">{{ result.sellers.length }}</span></h2>
+        <div class="sellers">
+          @for (s of result.sellers; track s.id) {
+            <a class="seller" [routerLink]="['/seller', s.id]">
+              <div class="avatar">{{ s.username.charAt(0).toUpperCase() }}</div>
+              <div class="seller-info">
+                <strong>{{ s.username }}</strong>
+                <span>@if (s.city) { 📍 {{ s.city }} · }{{ 'search.adsCount' | t: { n: s.cars_count } }}</span>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
+
+    @if (result.cars.length > 0) {
+      <section>
+        <h2>{{ 'search.cars' | t }} <span class="count">{{ result.cars.length }}</span></h2>
+        <div class="cars-grid">
+          @for (car of result.cars; track car.id) {
+            <a [routerLink]="['/cars', car.id]" class="car-card">
+              <div class="car-image">
+                @if (car.image_url) { <img [src]="car.image_url" [alt]="car.title" /> }
+                @else { <div class="no-image">🚗</div> }
+              </div>
+              <div class="car-info">
+                <h3>{{ car.title }}</h3>
+                <p class="car-meta">{{ car.brand_name }} · {{ car.year }} {{ 'common.yearSuffix' | t }}</p>
+                <p class="car-mileage">{{ car.mileage | number }} {{ 'common.km' | t }}</p>
+                <p class="car-price">{{ car.price | number }} ₸</p>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
+  }
+</div>

@@ -64,7 +64,8 @@ export class AuthService {
   }
 
   getUserId(): number {
-    return this.payload().user_id || 0;
+    // SimpleJWT stores the id as a string ("2"), so convert it to a number
+    return Number(this.payload().user_id) || 0;
   }
 
   isStaff(): boolean {

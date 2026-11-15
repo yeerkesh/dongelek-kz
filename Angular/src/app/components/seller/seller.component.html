@@ -1,0 +1,42 @@
+<div class="seller-page">
+  <a routerLink="/home" class="back">{{ 'common.back' | t }}</a>
+
+  @if (isLoading) {
+    <p class="state">{{ 'common.loading' | t }}</p>
+  } @else if (seller) {
+    <div class="card header">
+      <div class="avatar">{{ seller.username.charAt(0).toUpperCase() }}</div>
+      <div class="info">
+        <h1>{{ seller.username }}</h1>
+        <p class="muted">
+          @if (seller.city) { 📍 {{ seller.city }} · }{{ 'profile.since' | t }} {{ seller.date_joined | date: 'dd.MM.yyyy' }}
+        </p>
+      </div>
+      <div class="stat"><strong>{{ seller.cars.length }}</strong><span>{{ 'search.cars' | t }}</span></div>
+    </div>
+
+    <h2>{{ 'seller.ads' | t }}</h2>
+    @if (seller.cars.length === 0) {
+      <p class="state">{{ 'seller.none' | t }}</p>
+    } @else {
+      <div class="cars-grid">
+        @for (car of seller.cars; track car.id) {
+          <a [routerLink]="['/cars', car.id]" class="car-card">
+            <div class="car-image">
+              @if (car.image_url) { <img [src]="car.image_url" [alt]="car.title" /> }
+              @else { <div class="no-image">🚗</div> }
+            </div>
+            <div class="car-info">
+              <h3>{{ car.title }}</h3>
+              <p class="car-meta">{{ car.brand_name }} · {{ car.year }} {{ 'common.yearSuffix' | t }}</p>
+              <p class="car-mileage">{{ car.mileage | number }} {{ 'common.km' | t }}</p>
+              <p class="car-price">{{ car.price | number }} ₸</p>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  } @else {
+    <div class="error-banner">{{ errorMessage }}</div>
+  }
+</div>

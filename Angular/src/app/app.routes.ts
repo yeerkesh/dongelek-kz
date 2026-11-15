@@ -45,6 +45,14 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'search',
+    loadComponent: () => import('./components/search/search.component').then(m => m.SearchComponent)
+  },
+  {
+    path: 'seller/:id',
+    loadComponent: () => import('./components/seller/seller.component').then(m => m.SellerComponent)
+  },
+  {
     path: 'profile',
     loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent),
     canActivate: [authGuard]

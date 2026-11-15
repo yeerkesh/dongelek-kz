@@ -38,7 +38,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      const publicUrls = ['/api/cars-cbv/', '/api/brands/'];
+      const publicUrls = ['/api/cars-cbv/', '/api/brands/', '/api/search/', '/api/sellers/'];
       const isPublic = publicUrls.some(url => req.url.includes(url));
       if (!isPublic) goToLogin();
       return throwError(() => err);

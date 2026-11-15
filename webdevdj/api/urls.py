@@ -17,4 +17,6 @@ urlpatterns = [
     path('cars-cbv/<int:pk>/', views.CarDetailAPIView.as_view()),
     path('my-cars/', views.MyCarsAPIView.as_view()),
     path('profile/', views.ProfileAPIView.as_view()),
+    path('search/', views.SearchAPIView.as_view()),
+    path('sellers/<int:pk>/', views.SellerAPIView.as_view()),
 ]

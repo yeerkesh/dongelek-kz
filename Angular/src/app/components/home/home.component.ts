@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { I18nService } from '../../services/i18n.service';
 import { TPipe } from '../../pipes/t.pipe';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
 import { DecimalPipe } from '@angular/common';
@@ -17,6 +17,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
   private i18n = inject(I18nService);
+  private route = inject(ActivatedRoute);
   cars: Car[] = [];
   brands: CarBrand[] = [];
   filteredCars: Car[] = [];
@@ -33,6 +34,12 @@ export class HomeComponent implements OnInit {
 }
 
   ngOnInit(): void {
+    // a brand chosen in the search results arrives as /home?brand=ID
+    this.route.queryParamMap.subscribe(params => {
+      const brand = params.get('brand');
+      this.selectedBrand = brand ? +brand : '';
+      this.applyFilters();
+    });
     this.carService.getBrands().subscribe({
       next: b => this.brands = b,
       error: () => this.errorMessage = this.i18n.t('error.loadBrands')
