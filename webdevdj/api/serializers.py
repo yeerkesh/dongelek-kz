@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from . import validators as v
 from .models import CarBrand, Car, CarImage, Message, Profile
 
 
@@ -35,6 +36,16 @@ class CarSerializer(serializers.ModelSerializer):
         model = Car
         fields = '__all__'
         read_only_fields = ['views_count']
+
+    # ---- limits (see validators.py) ----
+    def validate_title(self, value): return v.validate_title(value)
+    def validate_year(self, value): return v.validate_year(value)
+    def validate_price(self, value): return v.validate_price(value)
+    def validate_mileage(self, value): return v.validate_mileage(value)
+    def validate_engine_volume(self, value): return v.validate_engine_volume(value)
+    def validate_description(self, value): return v.validate_description(value)
+    def validate_city(self, value): return v.validate_city(value)
+    def validate_phone(self, value): return v.validate_phone(value)
 
     def get_images(self, obj):
         return [img.url for img in obj.images.all()]
@@ -84,6 +95,9 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['sender', 'is_read']
 
+    def validate_text(self, value):
+        return v.validate_message_text(value)
+
     def validate(self, attrs):
         request = self.context.get('request')
         if request is None:
@@ -115,9 +129,12 @@ class MessageSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.Serializer):
     """Profile of the current user (User + Profile data)."""
     username = serializers.CharField(read_only=True)
-    email = serializers.EmailField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=False, allow_blank=True, max_length=254)
     phone = serializers.CharField(required=False, allow_blank=True, max_length=20)
     city = serializers.CharField(required=False, allow_blank=True, max_length=100)
+
+    def validate_phone(self, value): return v.validate_phone(value)
+    def validate_city(self, value): return v.validate_city(value)
     date_joined = serializers.DateTimeField(read_only=True)
     is_staff = serializers.BooleanField(read_only=True)
     cars_count = serializers.IntegerField(read_only=True)

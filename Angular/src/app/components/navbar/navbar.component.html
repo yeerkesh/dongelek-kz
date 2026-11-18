@@ -17,6 +17,9 @@
           <span class="badge">{{ unread.count() > 99 ? '99+' : unread.count() }}</span>
         }
       </a>
+      @if (auth.isStaff()) {
+        <a routerLink="/admin-panel" routerLinkActive="active" class="admin-link">⚙️ {{ 'nav.admin' | t }}</a>
+      }
       <a routerLink="/post-car" class="btn-post">{{ 'nav.post' | t }}</a>
       <a routerLink="/profile" routerLinkActive="active" class="username">👤 {{ auth.getUsername() }}</a>
       <button (click)="logout()" class="btn-logout">{{ 'nav.logout' | t }}</button>

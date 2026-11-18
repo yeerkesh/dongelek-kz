@@ -13,20 +13,26 @@
 
     <div class="form-group">
       <label>{{ 'auth.usernameReq' | t }}</label>
-      <input type="text" [(ngModel)]="username" [placeholder]="'auth.usernameNew' | t" class="form-control" />
+      <input type="text" [(ngModel)]="username" [placeholder]="'auth.usernameNew' | t" class="form-control"
+             [class.invalid]="errors['username']" [maxlength]="limits.usernameMax" />
+      @if (errors['username']) { <small class="field-error">{{ errors['username'] }}</small> }
     </div>
     <div class="form-group">
       <label>{{ 'auth.email' | t }} *</label>
-      <input type="email" [(ngModel)]="email" placeholder="your@email.com" class="form-control" />
+      <input type="email" [(ngModel)]="email" placeholder="your@email.com" class="form-control"
+             [class.invalid]="errors['email']" [maxlength]="limits.emailMax" />
+      @if (errors['email']) { <small class="field-error">{{ errors['email'] }}</small> }
     </div>
     <div class="form-group">
       <label>{{ 'auth.passwordReq' | t }}</label>
-      <input type="password" [(ngModel)]="password" [placeholder]="'auth.passwordMin' | t" class="form-control" />
+      <input type="password" [(ngModel)]="password" [placeholder]="'auth.passwordMin' | t" class="form-control"
+             [class.invalid]="errors['password']" [maxlength]="limits.passwordMax" />
+      @if (errors['password']) { <small class="field-error">{{ errors['password'] }}</small> }
     </div>
     <div class="form-group">
       <label>{{ 'auth.confirm' | t }}</label>
       <input type="password" [(ngModel)]="confirmPassword" [placeholder]="'auth.confirmPh' | t"
-             class="form-control" (keyup.enter)="register()" />
+             class="form-control" [maxlength]="limits.passwordMax" (keyup.enter)="register()" />
       @if (confirmPassword && password !== confirmPassword) {
         <p class="hint-error">{{ 'auth.mismatch' | t }}</p>
       }

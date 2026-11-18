@@ -8,6 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, F
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.validators import validate_email
+from . import validators as v
 
 
 
@@ -16,7 +19,7 @@ from django.db.models import Q, F
 @api_view(['GET', 'POST'])
 def brand_list(request):
     if request.method == 'GET':
-        brands = CarBrand.objects.all()
+        brands = sorted(CarBrand.objects.all(), key=lambda b: b.name.casefold())
         serializer = CarBrandSerializer(brands, many=True)
         return Response(serializer.data)
 
@@ -64,7 +67,22 @@ def register_view(request):
             status=400
         )
 
-    if User.objects.filter(username=username).exists():
+    username = str(username).strip()
+    email = str(email).strip()
+    password = str(password)
+
+    if not v.USERNAME_MIN <= len(username) <= v.USERNAME_MAX or not v.USERNAME_RE.match(username):
+        return Response({'error': 'Invalid username', 'code': 'username_invalid'}, status=400)
+
+    try:
+        validate_email(email)
+    except DjangoValidationError:
+        return Response({'error': 'Invalid email', 'code': 'email_invalid'}, status=400)
+
+    if not v.PASSWORD_MIN <= len(password) <= v.PASSWORD_MAX:
+        return Response({'error': 'Invalid password length', 'code': 'password_short'}, status=400)
+
+    if User.objects.filter(username__iexact=username).exists():
         return Response(
             {'error': 'Username already exists', 'code': 'username_taken'},
             status=400
@@ -203,7 +221,10 @@ class ProfileAPIView(APIView):
     def put(self, request):
         serializer = ProfileSerializer(data=request.data, partial=True)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=400)
+            errors = serializer.errors
+            code = 'phone_invalid' if 'phone' in errors else (
+                'email_invalid' if 'email' in errors else 'city_invalid')
+            return Response({**errors, 'code': code}, status=400)
 
         user = request.user
         profile, _ = Profile.objects.get_or_create(user=user)

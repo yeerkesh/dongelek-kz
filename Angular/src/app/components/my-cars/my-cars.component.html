@@ -27,12 +27,12 @@
           </div>
           <div class="car-info">
             <a [routerLink]="['/cars', car.id]" class="car-title">{{ car.title }}</a>
-            <p class="car-meta">{{ car.year }} {{ 'common.yearSuffix' | t }} · {{ car.mileage | number }} {{ 'common.km' | t }}</p>
+            <p class="car-meta">{{ car.year }} {{ 'common.yearSuffix' | t }} · {{ car.mileage | price }} {{ 'common.km' | t }}</p>
             <span class="status-chip" [class.inactive]="!car.is_active">
               {{ car.is_active ? '✅' : '⏸' }} {{ (car.is_active ? 'common.active' : 'common.inactive') | t }}
             </span>
           </div>
-          <div class="car-price">{{ car.price | number }} ₸</div>
+          <div class="car-price">{{ car.price | price }} ₸</div>
           <div class="car-actions">
             <a [routerLink]="['/post-car', car.id]" class="btn-edit">{{ 'common.edit' | t }}</a>
             <button (click)="deleteCar(car.id)" class="btn-delete">{{ 'common.delete' | t }}</button>

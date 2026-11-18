@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
-import { DecimalPipe } from '@angular/common';
+import { PricePipe } from '../../pipes/price.pipe';
+import { DigitsDirective } from '../../directives/digits.directive';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [TPipe, FormsModule, RouterLink, DecimalPipe],
+  imports: [TPipe, FormsModule, RouterLink, PricePipe, DigitsDirective],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

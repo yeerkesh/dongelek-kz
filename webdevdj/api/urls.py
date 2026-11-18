@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from . import views
+from . import admin_api
+from rest_framework.routers import SimpleRouter
 from .serializers import CustomTokenObtainPairSerializer
 
 urlpatterns = [
@@ -21,3 +23,14 @@ urlpatterns = [
     path('search/', views.SearchAPIView.as_view()),
     path('sellers/<int:pk>/', views.SellerAPIView.as_view()),
 ]
+
+
+# ----- admin panel API (/api/manage/..., only for staff) -----
+router = SimpleRouter()
+router.register('manage/brands', admin_api.AdminBrandViewSet, basename='manage-brand')
+router.register('manage/cars', admin_api.AdminCarViewSet, basename='manage-car')
+router.register('manage/users', admin_api.AdminUserViewSet, basename='manage-user')
+router.register('manage/messages', admin_api.AdminMessageViewSet, basename='manage-message')
+
+urlpatterns += [path('manage/stats/', admin_api.AdminStatsAPIView.as_view())]
+urlpatterns += router.urls

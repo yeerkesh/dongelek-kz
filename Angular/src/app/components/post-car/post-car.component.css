@@ -21,3 +21,5 @@ textarea.form-control { resize: vertical; }
 .section { margin: 26px 0 14px; padding-top: 18px; border-top: 1px solid #eee; font-size: 1.05rem; color: #1a1a2e; }
 .section:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
 .hint { margin: -8px 0 18px; font-size: 0.8rem; color: #999; }
+.field-error { display: block; color: #c00; font-size: 0.78rem; margin-top: 4px; }
+.form-control.invalid { border-color: #e94560; background: #fff7f8; }

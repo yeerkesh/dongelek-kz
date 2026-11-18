@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { I18nService } from '../../services/i18n.service';
 import { TPipe } from '../../pipes/t.pipe';
+import { CITY_RE, EMAIL_RE, LIMITS, isPhone } from '../../validation';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -18,6 +19,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class ProfileComponent implements OnInit {
   private i18n = inject(I18nService);
+  readonly limits = LIMITS;
   profile: Profile | null = null;
   email = '';
   phone = '';
@@ -53,11 +55,26 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  /** messages for the fields that are filled in wrong */
+  get errors(): Record<string, string> {
+    const e: Record<string, string> = {};
+    const email = this.email.trim();
+    if (email && (!EMAIL_RE.test(email) || email.length > LIMITS.emailMax)) e['email'] = this.i18n.t('limit.email');
+    const phone = this.phone.trim();
+    if (phone && !isPhone(phone)) e['phone'] = this.i18n.t('limit.phone');
+    const city = this.city.trim();
+    if (city && (city.length > LIMITS.cityMax || !CITY_RE.test(city))) e['city'] = this.i18n.t('limit.city');
+    return e;
+  }
+
+  get hasErrors(): boolean { return Object.keys(this.errors).length > 0; }
+
   save(): void {
+    if (Object.keys(this.errors).length > 0) return;
     this.isSaving = true;
     this.errorMessage = '';
     this.successMessage = '';
-    this.profileService.updateProfile({ email: this.email, phone: this.phone, city: this.city }).subscribe({
+    this.profileService.updateProfile({ email: this.email.trim(), phone: this.phone.trim(), city: this.city.trim() }).subscribe({
       next: p => {
         this.profile = p;
         this.successMessage = this.i18n.t('profile.saved');

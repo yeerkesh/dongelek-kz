@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { I18nService } from '../../services/i18n.service';
 import { TPipe } from '../../pipes/t.pipe';
+import { EMAIL_RE, LIMITS, USERNAME_RE } from '../../validation';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -19,6 +20,7 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class RegisterComponent {
   private i18n = inject(I18nService);
+  readonly limits = LIMITS;
   username = '';
   email = '';
   password = '';
@@ -33,8 +35,27 @@ export class RegisterComponent {
   private cdr: ChangeDetectorRef
 ) {}
 
+  /** messages for the fields that are filled in wrong (same limits as on the server) */
+  get errors(): Record<string, string> {
+    const e: Record<string, string> = {};
+    const username = this.username.trim();
+    if (username && (username.length < LIMITS.usernameMin || username.length > LIMITS.usernameMax
+        || !USERNAME_RE.test(username))) {
+      e['username'] = this.i18n.t('limit.username');
+    }
+    const email = this.email.trim();
+    if (email && (!EMAIL_RE.test(email) || email.length > LIMITS.emailMax)) {
+      e['email'] = this.i18n.t('limit.email');
+    }
+    if (this.password && (this.password.length < LIMITS.passwordMin || this.password.length > LIMITS.passwordMax)) {
+      e['password'] = this.i18n.t('auth.passwordMin');
+    }
+    return e;
+  }
+
   isValid(): boolean {
-    return !!(this.username && this.email && this.password && this.password === this.confirmPassword);
+    return !!(this.username.trim() && this.email.trim() && this.password && this.password === this.confirmPassword)
+      && Object.keys(this.errors).length === 0;
   }
 
   register(): void {
@@ -45,15 +66,12 @@ export class RegisterComponent {
     }
     this.isLoading = true;
     this.errorMessage = '';
-    this.auth.register({ username: this.username, email: this.email, password: this.password }).subscribe({
+    this.auth.register({ username: this.username.trim(), email: this.email.trim(), password: this.password }).subscribe({
       next: () => {
         this.successMessage = this.i18n.t('msg.accountCreated');
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err: HttpErrorResponse) => {
-        console.log('REGISTER ERROR FULL:', err);
-        console.log('REGISTER ERROR BODY:', err.error);
-
         const code = err.error?.code;
         this.errorMessage = code
           ? this.i18n.t('error.' + code)

@@ -23,20 +23,23 @@
         <input type="text" [value]="profile.username" disabled />
       </label>
       <label>{{ 'auth.email' | t }}
-        <input type="email" [(ngModel)]="email" name="email" />
+        <input type="email" [(ngModel)]="email" name="email" [maxlength]="limits.emailMax" [class.invalid]="errors['email']" />
+        @if (errors['email']) { <small class="field-error">{{ errors['email'] }}</small> }
       </label>
       <label>{{ 'profile.phone' | t }}
-        <input type="text" [(ngModel)]="phone" name="phone" maxlength="20" placeholder="+7 777 123 45 67" />
+        <input type="text" [(ngModel)]="phone" name="phone" [maxlength]="limits.phoneMax" placeholder="+7 777 123 45 67" [class.invalid]="errors['phone']" />
+        @if (errors['phone']) { <small class="field-error">{{ errors['phone'] }}</small> }
       </label>
       <label>{{ 'profile.city' | t }}
-        <input type="text" [(ngModel)]="city" name="city" maxlength="100" [placeholder]="'profile.cityPh' | t" />
+        <input type="text" [(ngModel)]="city" name="city" [maxlength]="limits.cityMax" [placeholder]="'profile.cityPh' | t" [class.invalid]="errors['city']" />
+        @if (errors['city']) { <small class="field-error">{{ errors['city'] }}</small> }
       </label>
 
       @if (errorMessage) { <div class="alert error">{{ errorMessage }}</div> }
       @if (successMessage) { <div class="alert success">{{ successMessage }}</div> }
 
       <div class="actions">
-        <button class="btn-save" (click)="save()" [disabled]="isSaving">
+        <button class="btn-save" (click)="save()" [disabled]="isSaving || hasErrors">
           {{ (isSaving ? 'common.saving' : 'common.save') | t }}
         </button>
         <button class="btn-logout" (click)="logout()">{{ 'nav.logout' | t }}</button>

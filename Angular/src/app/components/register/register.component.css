@@ -15,3 +15,5 @@
 .auth-switch a { color: #e94560; text-decoration: none; font-weight: 600; }
 .error-banner { background: #fff0f0; border: 1px solid #fcc; color: #c00; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 0.88rem; }
 .success-banner { background: #f0fff4; border: 1px solid #9f9; color: #060; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 0.88rem; }
+.field-error { display: block; color: #c00; font-size: 0.78rem; margin-top: 4px; }
+.form-control.invalid { border-color: #e94560; }

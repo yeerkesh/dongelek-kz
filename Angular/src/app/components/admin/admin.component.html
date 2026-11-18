@@ -1,0 +1,19 @@
+<div class="adm">
+  <h1>⚙️ {{ 'admin.title' | t }}</h1>
+
+  <div class="adm-tabs">
+    @for (item of tabs; track item.id) {
+      <button type="button" [class.active]="tab === item.id" (click)="setTab(item.id)">
+        {{ item.icon }} {{ item.key | t }}
+      </button>
+    }
+  </div>
+
+  @switch (tab) {
+    @case ('dashboard') { <app-admin-dashboard /> }
+    @case ('cars') { <app-admin-cars /> }
+    @case ('brands') { <app-admin-brands /> }
+    @case ('users') { <app-admin-users /> }
+    @case ('messages') { <app-admin-messages /> }
+  }
+</div>

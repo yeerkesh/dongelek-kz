@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './guards/admin.guard';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -43,6 +44,11 @@ export const routes: Routes = [
     path: 'messages/:carId/:userId',
     loadComponent: () => import('./components/chat/chat.component').then(m => m.ChatComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'admin-panel',
+    loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent),
+    canActivate: [authGuard, adminGuard]
   },
   {
     path: 'search',

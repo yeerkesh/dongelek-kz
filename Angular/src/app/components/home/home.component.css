@@ -3,8 +3,8 @@
 .hero h1 { margin: 0 0 8px; font-size: 2rem; }
 .hero p { margin: 0; color: #aaa; }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f8f8f8; padding: 16px; border-radius: 10px; }
-.filter-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; min-width: 140px; }
-.search-input { flex: 1; min-width: 200px; }
+.filter-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; min-width: 140px; flex: 1; }
+.btn-reset, .btn-refresh { flex: 0 0 auto; }
 .btn-reset, .btn-refresh { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
 .btn-reset { background: #eee; color: #555; }
 .btn-refresh { background: #1a1a2e; color: #fff; }

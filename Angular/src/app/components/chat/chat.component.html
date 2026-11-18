@@ -33,7 +33,7 @@
     @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
 
     <div class="composer">
-      <textarea [(ngModel)]="text" rows="2" [placeholder]="'chat.placeholder' | t"
+      <textarea [(ngModel)]="text" rows="2" maxlength="2000" [placeholder]="'chat.placeholder' | t"
                 (keydown.enter)="onEnter($event)"></textarea>
       <button (click)="send()" [disabled]="!text.trim() || isSending">
         {{ isSending ? '...' : ('common.send' | t) }}

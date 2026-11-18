@@ -5,9 +5,6 @@
   </div>
 
   <div class="filters">
-    <input type="text" [placeholder]="'home.search' | t" [(ngModel)]="searchQuery"
-           (ngModelChange)="applyFilters()" class="filter-input search-input" />
-
     <select [(ngModel)]="selectedBrand" (ngModelChange)="applyFilters()" class="filter-input">
       <option value="">{{ 'home.allBrands' | t }}</option>
       @for (b of brands; track b.id) {
@@ -15,9 +12,9 @@
       }
     </select>
 
-    <input type="number" [placeholder]="'home.priceFrom' | t" [(ngModel)]="minPrice"
+    <input type="text" inputmode="numeric" appDigits maxlength="10" [placeholder]="'home.priceFrom' | t" [(ngModel)]="minPrice"
            (ngModelChange)="applyFilters()" class="filter-input" />
-    <input type="number" [placeholder]="'home.priceTo' | t" [(ngModel)]="maxPrice"
+    <input type="text" inputmode="numeric" appDigits maxlength="10" [placeholder]="'home.priceTo' | t" [(ngModel)]="maxPrice"
            (ngModelChange)="applyFilters()" class="filter-input" />
 
     <button (click)="resetFilters()" class="btn-reset">{{ 'home.reset' | t }}</button>
@@ -52,8 +49,8 @@
           <div class="car-info">
             <h3>{{ car.title }}</h3>
             <p class="car-meta">{{ getBrandName(car.brand) }} · {{ car.year }} {{ 'common.yearSuffix' | t }}@if (car.city) { · {{ car.city }} }</p>
-            <p class="car-mileage">{{ car.mileage | number }} {{ 'common.km' | t }}</p>
-            <p class="car-price">{{ car.price | number }} ₸</p>
+            <p class="car-mileage">{{ car.mileage | price }} {{ 'common.km' | t }}</p>
+            <p class="car-price">{{ car.price | price }} ₸</p>
           </div>
         </a>
       }

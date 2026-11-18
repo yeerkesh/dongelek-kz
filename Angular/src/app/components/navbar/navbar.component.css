@@ -33,3 +33,4 @@
 .search button { border: 1px solid #3a3a5a; border-left: none; border-radius: 0 20px 20px 0; background: #252540; color: #fff; padding: 0 12px; cursor: pointer; }
 .search button:hover { background: #e94560; border-color: #e94560; }
 @media (max-width: 900px) { .search { display: none; } }
+.admin-link { color: #f5c26b !important; }

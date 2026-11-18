@@ -7,16 +7,19 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { AuthService } from '../../services/auth.service';
 import { Car, CarBrand } from '../../interfaces/car.interface';
+import { DigitsDirective } from '../../directives/digits.directive';
+import { LIMITS, carErrors } from '../../validation';
 
 @Component({
   selector: 'app-post-car',
   standalone: true,
-  imports: [TPipe, FormsModule, RouterLink],
+  imports: [TPipe, FormsModule, RouterLink, DigitsDirective],
   templateUrl: './post-car.component.html',
   styleUrl: './post-car.component.css'
 })
 export class PostCarComponent implements OnInit {
   private i18n = inject(I18nService);
+  readonly limits = LIMITS;
   isEditMode = false;
   carId: number | null = null;
   brands: CarBrand[] = [];
@@ -95,8 +98,22 @@ export class PostCarComponent implements OnInit {
     }
   }
 
+  /** error messages of the fields that are filled in wrong (see validation.ts) */
+  get errors(): Record<string, string> {
+    return carErrors({
+      title: this.title, year: this.year, price: this.price, mileage: this.mileage,
+      engineVolume: this.engineVolume, description: this.description, city: this.city,
+      phone: this.phone, imageUrl: this.imageUrl, extraImages: this.extraImages,
+    }, (key, params) => this.i18n.t(key, params));
+  }
+
   isFormValid(): boolean {
-    return !!(this.title && this.brand && this.price && this.year && this.mileage && this.description);
+    const filled = !!(
+      this.title.trim() && this.brand !== '' &&
+      this.price !== '' && this.year !== '' && this.mileage !== '' &&
+      this.description.trim()
+    );
+    return filled && Object.keys(this.errors).length === 0;
   }
 
   submit(): void {
@@ -104,9 +121,9 @@ export class PostCarComponent implements OnInit {
     this.isSubmitting = true;
     this.errorMessage = '';
     const payload = {
-      title: this.title, brand: +this.brand, price: +this.price,
-      year: +this.year, mileage: +this.mileage, description: this.description,
-      image_url: this.imageUrl, is_active: this.isActive,
+      title: this.title.trim(), brand: +this.brand, price: +this.price,
+      year: +this.year, mileage: +this.mileage, description: this.description.trim(),
+      image_url: this.imageUrl.trim(), is_active: this.isActive,
       city: this.city.trim(),
       body_type: this.bodyType,
       engine_volume: this.engineVolume === '' ? null : +this.engineVolume,
@@ -132,7 +149,9 @@ export class PostCarComponent implements OnInit {
         const e = err?.error;
         this.errorMessage = (e?.extra_images || e?.image_url)
           ? this.i18n.t('error.badPhotoUrls')
-          : (e?.detail || this.i18n.t('error.save'));
+          : (e && typeof e === 'object' && !e.detail
+              ? this.i18n.t('error.invalidData')
+              : (e?.detail || this.i18n.t('error.save')));
         this.isSubmitting = false;
       }
     });

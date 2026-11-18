@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { PricePipe } from '../../pipes/price.pipe';
 import { Subscription, of, switchMap, tap, catchError } from 'rxjs';
 import { SearchResult, SearchService } from '../../services/search.service';
 import { I18nService } from '../../services/i18n.service';
@@ -10,7 +10,7 @@ import { TPipe } from '../../pipes/t.pipe';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [TPipe, FormsModule, RouterLink, DecimalPipe],
+  imports: [TPipe, FormsModule, RouterLink, PricePipe],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })

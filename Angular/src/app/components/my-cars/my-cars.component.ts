@@ -5,11 +5,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { Car } from '../../interfaces/car.interface';
-import { DecimalPipe } from '@angular/common';
+import { PricePipe } from '../../pipes/price.pipe';
 @Component({
   selector: 'app-my-cars',
   standalone: true,
-  imports: [TPipe, RouterLink, DecimalPipe],
+  imports: [TPipe, RouterLink, PricePipe],
   templateUrl: './my-cars.component.html',
   styleUrl: './my-cars.component.css'
 })
