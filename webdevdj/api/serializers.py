@@ -46,6 +46,12 @@ class CarSerializer(serializers.ModelSerializer):
     def validate_description(self, value): return v.validate_description(value)
     def validate_city(self, value): return v.validate_city(value)
     def validate_phone(self, value): return v.validate_phone(value)
+    def validate_image_url(self, value): return v.validate_http_url(value)
+
+    def validate_extra_images(self, value):
+        for url in value:
+            v.validate_http_url(url)
+        return value
 
     def get_images(self, obj):
         return [img.url for img in obj.images.all()]

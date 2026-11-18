@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { CarService } from '../../services/car.service';
 import { AuthService } from '../../services/auth.service';
@@ -111,8 +112,8 @@ export class CarDetailComponent implements OnInit {
     this.phoneError = '';
     this.carService.getCarPhone(this.car.id).subscribe({
       next: res => { this.phone = res.phone; this.phoneLoading = false; this.cdr.detectChanges(); },
-      error: () => {
-        this.phoneError = this.i18n.t('error.phoneFail');
+      error: (err: HttpErrorResponse) => {
+        this.phoneError = this.i18n.t(err.status === 429 ? 'error.tooMany' : 'error.phoneFail');
         this.phoneLoading = false;
         this.cdr.detectChanges();
       }
@@ -142,8 +143,8 @@ export class CarDetailComponent implements OnInit {
         this.sendingMessage = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.errorMessage = this.i18n.t('error.sendFail');
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = this.i18n.t(err.status === 429 ? 'error.tooMany' : 'error.sendFail');
         this.sendingMessage = false;
         this.cdr.detectChanges();
       }

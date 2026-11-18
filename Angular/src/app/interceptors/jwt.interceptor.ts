@@ -9,7 +9,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   // login / register / refresh are sent without a token
-  const isAuthCall = ['/api/login/', '/api/register/', '/api/refresh/'].some(u => req.url.includes(u));
+  const isAuthCall = ['/api/login/', '/api/register/', '/api/refresh/', '/api/logout/'].some(u => req.url.includes(u));
 
   const withToken = (r: HttpRequest<unknown>) => {
     const token = auth.getToken();

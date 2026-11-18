@@ -2,6 +2,7 @@
 The same numbers are used in the Angular forms (src/app/validation.ts)."""
 import re
 from datetime import date
+from urllib.parse import urlparse
 from rest_framework import serializers
 
 YEAR_MIN = 1950
@@ -87,4 +88,11 @@ def validate_message_text(value):
     value = value.strip()
     if not value or len(value) > MESSAGE_MAX:
         raise serializers.ValidationError(f'Message must have 1-{MESSAGE_MAX} characters.')
+    return value
+
+
+def validate_http_url(value):
+    """Photo links: only http:// and https:// (no ftp:, file:, javascript: ...)."""
+    if urlparse(value).scheme not in ('http', 'https'):
+        raise serializers.ValidationError('Only http:// and https:// links are allowed.')
     return value

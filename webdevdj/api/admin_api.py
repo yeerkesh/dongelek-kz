@@ -7,6 +7,8 @@ Everything is under /api/manage/ :
   messages/         - read and delete messages
 """
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password as check_password_strength
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Count, Sum
 from rest_framework import mixins, serializers, viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -145,6 +147,13 @@ class AdminUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'is_staff', 'is_active',
                   'date_joined', 'last_login', 'cars_count', 'password']
         read_only_fields = ['date_joined', 'last_login']
+
+    def validate_password(self, value):
+        try:
+            check_password_strength(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(list(exc.messages))
+        return value
 
     def validate_username(self, value):
         value = value.strip()

@@ -272,6 +272,9 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     "error.brand_has_cars": "В этой марке есть объявления. Сначала удалите или перенесите их.",
     "error.cannot_delete_self": "Нельзя удалить самого себя.",
     "error.cannot_change_self": "Нельзя снять с себя роль админа или заблокировать себя.",
+    "error.tooMany": "Слишком много попыток. Подождите минуту и повторите.",
+    "error.password_weak": "Слишком простой пароль: не используйте распространённые пароли, только цифры или свой логин.",
+    "error.serverError": "Ошибка сервера. Проверьте, что бэкенд запущен и миграции применены, и повторите.",
   },
   en: {
     "nav.ads": "Ads",
@@ -537,6 +540,9 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     "error.brand_has_cars": "This brand has ads. Delete or move them first.",
     "error.cannot_delete_self": "You cannot delete yourself.",
     "error.cannot_change_self": "You cannot remove your own admin role or block yourself.",
+    "error.tooMany": "Too many attempts. Wait a minute and try again.",
+    "error.password_weak": "The password is too simple: avoid common passwords, digits only or your username.",
+    "error.serverError": "Server error. Check that the backend is running and the migrations are applied, then try again.",
   },
   kk: {
     "nav.ads": "Хабарландырулар",
@@ -802,5 +808,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     "error.brand_has_cars": "Бұл маркада хабарландырулар бар. Алдымен оларды жойыңыз немесе ауыстырыңыз.",
     "error.cannot_delete_self": "Өзіңізді жоюға болмайды.",
     "error.cannot_change_self": "Өз әкімшілік рөліңізді алуға немесе өзіңізді бұғаттауға болмайды.",
+    "error.tooMany": "Тым көп әрекет. Бір минут күтіп, қайталап көріңіз.",
+    "error.password_weak": "Құпиясөз тым оңай: кең таралған құпиясөзді, тек сандарды немесе логинді қолданбаңыз.",
+    "error.serverError": "Сервер қатесі. Бэкенд қосулы екенін және миграциялар орындалғанын тексеріп, қайталап көріңіз.",
   },
 };

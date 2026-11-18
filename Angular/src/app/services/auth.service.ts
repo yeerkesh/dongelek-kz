@@ -42,8 +42,13 @@ export class AuthService {
   }
 
   logout() {
+    const refresh = this.getRefreshToken();
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    // the server cancels the refresh token, so a stolen copy stops working
+    if (refresh) {
+      this.http.post(`${this.api}/logout/`, { refresh }).subscribe({ error: () => {} });
+    }
   }
 
   isLoggedIn(): boolean {

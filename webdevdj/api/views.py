@@ -6,6 +6,13 @@ from .serializers import CarBrandSerializer, CarSerializer, MessageSerializer, P
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+from rest_framework.decorators import throttle_classes
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.password_validation import validate_password
+from .serializers import CustomTokenObtainPairSerializer
+from .throttles import DEFAULT_THROTTLES, LoginThrottle, MessageThrottle, PhoneThrottle, RegisterThrottle
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, F
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -37,6 +44,7 @@ def brand_list(request):
 # ----------- MESSAGES -----------
 
 @api_view(['GET', 'POST'])
+@throttle_classes([MessageThrottle, *DEFAULT_THROTTLES])
 def message_list(request):
     if not request.user.is_authenticated:
         return Response({'error': 'Authentication required'}, status=401)
@@ -56,6 +64,7 @@ def message_list(request):
         return Response(serializer.errors, status=400)
     
 @api_view(['POST'])
+@throttle_classes([RegisterThrottle, *DEFAULT_THROTTLES])
 def register_view(request):
     username = request.data.get('username')
     email = request.data.get('email')
@@ -81,6 +90,12 @@ def register_view(request):
 
     if not v.PASSWORD_MIN <= len(password) <= v.PASSWORD_MAX:
         return Response({'error': 'Invalid password length', 'code': 'password_short'}, status=400)
+
+    try:
+        # refuses 12345678, "password", numbers only, a password similar to the login ...
+        validate_password(password, user=User(username=username, email=email))
+    except DjangoValidationError:
+        return Response({'error': 'Password is too weak', 'code': 'password_weak'}, status=400)
 
     if User.objects.filter(username__iexact=username).exists():
         return Response(
@@ -172,6 +187,7 @@ class CarDetailAPIView(APIView):
 class CarPhoneAPIView(APIView):
     """Shows the phone number of the ad (the "Show phone" button)."""
     permission_classes = [AllowAny]
+    throttle_classes = [PhoneThrottle, *DEFAULT_THROTTLES]
 
     def get(self, request, pk):
         car = get_object_or_404(_cars_queryset(), pk=pk)
@@ -434,3 +450,26 @@ class SellerAPIView(APIView):
             'date_joined': user.date_joined,
             'cars': [_car_card(car) for car in cars],
         })
+
+
+# ----------- LOGIN / LOGOUT -----------
+
+class LoginView(TokenObtainPairView):
+    """POST /api/login/ - 10 attempts per minute from one IP address."""
+    serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = [LoginThrottle, *DEFAULT_THROTTLES]
+
+
+class LogoutView(APIView):
+    """POST /api/logout/ - cancels the refresh token, so a stolen copy stops working."""
+    permission_classes = [AllowAny]
+    authentication_classes = []   # works even when the access token is already expired
+
+    def post(self, request):
+        token = request.data.get('refresh')
+        if token:
+            try:
+                RefreshToken(token).blacklist()
+            except TokenError:
+                pass   # already invalid - nothing to cancel
+        return Response(status=204)

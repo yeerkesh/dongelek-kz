@@ -3,6 +3,7 @@ import { I18nService } from '../../services/i18n.service';
 import { TPipe } from '../../pipes/t.pipe';
 import { Component, OnDestroy, OnInit, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MessageService, Thread } from '../../services/message.service';
@@ -81,8 +82,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.isSending = false;
         this.load(false);
       },
-      error: () => {
-        this.errorMessage = this.i18n.t('error.sendMessage');
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = this.i18n.t(err.status === 429 ? 'error.tooMany' : 'error.sendMessage');
         this.isSending = false;
         this.cdr.detectChanges();
       }

@@ -96,6 +96,7 @@ export class AdminService {
 /** Turns an error of the server into a message in the current language. */
 export function adminError(err: HttpErrorResponse, i18n: I18nService): string {
   const body = err.error;
+  if (err.status === 429) return i18n.t('error.tooMany');
   if (body?.code) return i18n.t('error.' + body.code);
   if (err.status === 400 && body && typeof body === 'object') {
     if (body.name) return i18n.t('error.brandExists');
@@ -103,7 +104,7 @@ export function adminError(err: HttpErrorResponse, i18n: I18nService): string {
       const text = JSON.stringify(body.username).toLowerCase();
       return i18n.t(text.includes('exist') ? 'error.username_taken' : 'limit.username');
     }
-    if (body.password) return i18n.t('auth.passwordMin');
+    if (body.password) return i18n.t('error.password_weak');
     if (body.email) return i18n.t('limit.email');
     return i18n.t('error.invalidData');
   }

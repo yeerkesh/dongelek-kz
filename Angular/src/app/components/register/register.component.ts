@@ -73,7 +73,9 @@ export class RegisterComponent {
       },
       error: (err: HttpErrorResponse) => {
         const code = err.error?.code;
-        this.errorMessage = code
+        this.errorMessage = err.status === 429
+          ? this.i18n.t('error.tooMany')
+          : code
           ? this.i18n.t('error.' + code)
           : (err.error?.detail || this.i18n.t('error.register'));
 

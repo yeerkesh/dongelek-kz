@@ -41,10 +41,12 @@ export class LoginComponent {
         this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {
-        console.log('LOGIN ERROR FULL:', err);
-        console.log('LOGIN ERROR BODY:', err.error);
-
-        this.errorMessage = this.i18n.t('error.badCreds');
+        // 401 = wrong login or password; anything else is NOT a wrong password
+        // (429 = too many attempts, 0 / 5xx = the server is down or broken)
+        this.errorMessage = this.i18n.t(
+          err.status === 401 ? 'error.badCreds'
+          : err.status === 429 ? 'error.tooMany'
+          : 'error.serverError');
         this.isLoading = false;
 
         this.cdr.detectChanges();
